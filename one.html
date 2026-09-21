@@ -118,7 +118,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <nav>
  <a href="#s1">結論</a><a href="#s2">賣三重</a><a href="#s3">保本價</a>
- <a href="#s4">買下一間</a><a href="#s5">每月剩多少</a><a href="#s6">還媽媽</a>
+ <a href="#s4">買下一間</a><a href="#s4b">搬遷採購</a><a href="#s5">每月剩多少</a><a href="#s6">還媽媽</a>
  <a href="#s7">風險</a><a href="#s8">硬規則</a><a href="#s9">問三個人</a>
  <a href="#s10">看物件速算</a><a href="#s11">來源</a>
 </nav>
@@ -198,10 +198,22 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="fld"><label>新屋裝修</label><input type="number" id="p_newReno" step="10"><span class="u">萬</span></div>
     <div class="fld"><label>裝修緩衝</label><input type="number" id="p_buffer" step="1"><span class="u">%</span></div>
     <div class="fld"><label>新屋房貸壽險</label><input type="number" id="p_newIns" step="1"><span class="u">萬</span></div>
-    <div class="fld"><label>搬遷與採購</label><input type="number" id="p_moving" step="1"><span class="u">萬</span></div>
     <div class="fld"><label>媽媽借款</label><input type="number" id="p_mom" step="10"><span class="u">萬</span></div>
     <div class="fld"><label>帳上現金</label><input type="number" id="p_cash" step="10"><span class="u">萬</span></div>
    </div>
+  </div>
+ </details>
+</section>
+
+<section id="s4b">
+ <h2 class="m">四之二、搬遷與採購那 47.2 萬是什麼</h2>
+ <div class="card"><table id="movingTbl"></table></div>
+ <div class="note" id="mvNote"></div>
+ <details>
+  <summary>▸ 改搬遷採購的數字</summary>
+  <div class="card" style="margin-top:8px">
+   <div class="grid" id="movingEdit"></div>
+   <div class="src" style="margin-top:9px">改任一項，上面表格、第四節資金表、第七節壓力測試都會跟著重算。</div>
   </div>
  </details>
 </section>
@@ -242,9 +254,17 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
  看到物件當天就拿去問，不要等到下斡旋。同一物件跑三家，估價可差 5〜10%。</div>
  <div class="note red"><b>② 三重賣不到保本價</b>
  <span id="t_risk2">—</span></div>
- <div class="note"><b>其他壓力測試（單項變壞）</b>
- 家具家電都不買、媽媽的錢延後、舊屋晚 3 個月賣、租金只收 6 萬、空租 2 個月、裝修拖到 12 個月
- ——這六項單獨發生都還撐得住。裝修超支 30% 剩不到 10 萬，七件全壞幾乎歸零。</div>
+ <div class="card" style="margin-top:4px">
+  <table id="stressTbl"></table>
+ </div>
+ <div class="src">每一列都是「其他條件不變、只壞這一件」的結果，直接用上面的參數重算，
+ 不是抄來的固定數字。改任何參數這張表都會跟著動。</div>
+ <div class="note"><b>這張表比原本的換屋計畫保守</b>
+ 它算的是「所有錢一次擺上桌夠不夠」，沒把期間陸續進來的月結餘算進去。
+ 原檔用逐月模擬（裝修款分五期付、每月還有薪水進來），所以同樣是裝修超支 30%，
+ 原檔說「剩不到 10 萬」、這裡說付不出來。<br>
+ <b class="inl">兩個都對，看的是不同問題</b>——這裡答的是「手上現金夠不夠撐過去」，
+ 原檔答的是「照時間軸走會不會斷炊」。要保守就看這張。</div>
 </section>
 
 <section id="s8">
@@ -367,7 +387,7 @@ var DEF = {
   salePrice:1400, buyPrice:1250, reno:53.65, smart:10, buyFee:12.2045, friend:30,
   invRate:12, insLoan:20, doSurrender:0, surrender:0, payoff:7.5, mort:1000, land:13.3, brokerRate:4, taxRate:45,
   // 買下一間
-  newPrice:950, ltv:80, ltv2:5, rate2n:3.0, costRate:2.5, newReno:195.7, buffer:15, newIns:24, moving:47.2,
+  newPrice:950, ltv:80, ltv2:5, rate2n:3.0, costRate:2.5, newReno:195.7, buffer:15, newIns:24,
   mom:129, cash:90,
   // 月收支
   income:125000, rent:75000, netr:82, myRent:29000, oldLoan:14800, credit:20000,
@@ -379,6 +399,35 @@ var DEF = {
   rA:2.5, rB:2.5, rC:2.5, rD:0,
   oReno:196, oAgent:2, oRefer:9.5, oFee:8, oPermit:16.5, oConsult:50, oVac:8
 };
+
+var MOVING = [
+ {id:"dep",   n:"租屋押金 ×2",       c:58000, ph:0, must:1, m:"take",  note:"退租才拿得回"},
+ {id:"rent1", n:"首月租金",           c:29000, ph:0, must:1, m:""},
+ {id:"fee",   n:"仲介服務費",          c:29000, ph:0, must:1, m:""},
+ {id:"move",  n:"搬家費",             c:35000, ph:0, must:1, m:"",     note:"抓 3〜4 萬中間"},
+ {id:"ac",    n:"冷氣移機",           c:30000, ph:0, m:"part", note:"之後還要再移一次"},
+ {id:"paint", n:"油漆",               c:20000, ph:0, m:"leave",note:"空屋期做最省事"},
+ {id:"track", n:"軌道燈＋窗簾",        c:40000, ph:0, m:"leave"},
+ {id:"pend",  n:"吊燈",               c:10000, ph:0, m:"part", note:"原燈具要留著還原"},
+ {id:"bed",   n:"床架",               c:20000, ph:0, m:"take"},
+ {id:"ward",  n:"衣櫃",               c:25000, ph:0, m:"take"},
+ {id:"table", n:"圓形餐桌",            c:6000,  ph:1, m:"take"},
+ {id:"chair", n:"餐桌椅",             c:4000,  ph:1, m:"take"},
+ {id:"shoe",  n:"鞋櫃",               c:8000,  ph:1, m:"take"},
+ {id:"dish",  n:"洗碗機",             c:26000, ph:1, m:"part", note:"嵌入式帶不走"},
+ {id:"tvc",   n:"電視櫃",             c:20000, ph:2, m:"take"},
+ {id:"tea",   n:"茶几",               c:2000,  ph:2, m:"take"},
+ {id:"dyson", n:"Dyson 掃拖機器人",    c:25000, ph:2, m:"take"},
+ {id:"side",  n:"餐邊櫃",             c:20000, ph:3, m:"take"},
+ {id:"vinyl", n:"黑膠櫃",             c:10000, ph:3, m:"take"},
+ {id:"muji",  n:"無印電器櫃",          c:10000, ph:3, m:"take"},
+ {id:"dry",   n:"電子衣櫥",            c:45000, ph:3, m:"take"}
+];
+var PHASE = ["搬家當月","第 1 個月","第 3 個月","開始收租後"];
+var MTAG = {take:"帶得走", part:"部分帶得走", leave:"帶不走"};
+
+DEF.mv = {};
+MOVING.forEach(function(x){ DEF.mv[x.id] = x.c; });
 
 var p = JSON.parse(JSON.stringify(DEF));
 
@@ -419,13 +468,20 @@ function zeroTax(){
   return (acq+deduct+improve)/(1-p.brokerRate/100)/10000;
 }
 
+/* ── 搬遷與採購 ── */
+function mvVal(id){ var v=p.mv&&p.mv[id]; return (typeof v==="number"&&isFinite(v))?v:0; }
+function movingTotal(){ return MOVING.reduce(function(a,x){return a+mvVal(x.id);},0); }
+function movingMust(){ return MOVING.reduce(function(a,x){return a+(x.must?mvVal(x.id):0);},0); }
+function movingFurn(){ return MOVING.reduce(function(a,x){return a+(x.must?0:mvVal(x.id));},0); }
+function movingPhase(ph){ return MOVING.reduce(function(a,x){return a+(x.ph===ph?mvVal(x.id):0);},0); }
+
 /* ── 買下一間 ── */
 function fund(){
   var price=W(p.newPrice);
   var down = price*(1-p.ltv/100-p.ltv2/100);
   var buyCost = price*(p.costRate/100);
   var reno = W(p.newReno)*(1+p.buffer/100);
-  var need = down + buyCost + reno + W(p.newIns) + W(p.moving);
+  var need = down + buyCost + reno + W(p.newIns) + movingTotal();
   var sellNet = sellAt(p.salePrice).net;
   var src = sellNet + W(p.mom) + W(p.cash);
   return {down:down, buyCost:buyCost, reno:reno, need:need, sellNet:sellNet, src:src, gap:src-need};
@@ -546,7 +602,7 @@ function render(){
     + "<tr><td>買房交易成本 "+p.costRate+"%</td><td>"+n(f.buyCost)+"</td></tr>"
     + "<tr><td>裝修工程（含 "+p.buffer+"% 緩衝）</td><td>"+n(f.reno)+"</td></tr>"
     + "<tr><td>新屋房貸壽險</td><td>"+n(W(p.newIns))+"</td></tr>"
-    + "<tr><td>搬遷與採購</td><td>"+n(W(p.moving))+"</td></tr>"
+    + "<tr><td>搬遷與採購（明細見下一節）</td><td>"+n(movingTotal())+"</td></tr>"
     + "<tr class='tot'><td>需求合計</td><td>"+n(f.need)+"</td></tr>"
     + "<tr class='sep'><th style='text-align:left'>資金來源</th><th></th></tr>"
     + "<tr><td>賣三重淨到手（成交 "+w(p.salePrice,0)+" 萬）</td><td class='pos'>"+n(f.sellNet)+"</td></tr>"
@@ -594,10 +650,103 @@ function render(){
     "低於 <b class='inl'>"+w(be,0)+" 萬</b> 這筆投資就是虧的。開價 1,488 萬距保本價還有 "
     + w(1488-be,0)+" 萬議價空間，但<b class='inl'>只有 "+room.toFixed(1)+"% 的下跌容忍度</b>。";
 
+  // 四之二、搬遷採購
+  renderMoving();
+  updateMovingNote();
+  renderStress();
+
   // 十、看物件速算
   renderOffer(f.src/10000);
 
   save();
+}
+
+function renderStress(){
+  var baseGap = fund().gap;
+  var save = JSON.stringify({mv:p.mv, rent:p.rent, newReno:p.newReno, buffer:p.buffer,
+                             ltv:p.ltv, ltv2:p.ltv2, salePrice:p.salePrice, newIns:p.newIns});
+  var out = [];
+  function run(label, mut, hint){
+    var bak = JSON.parse(save);
+    mut();
+    out.push([label, fund().gap, hint||""]);
+    p.mv=bak.mv; p.rent=bak.rent; p.newReno=bak.newReno; p.buffer=bak.buffer;
+    p.ltv=bak.ltv; p.ltv2=bak.ltv2; p.salePrice=bak.salePrice; p.newIns=bak.newIns;
+  }
+  run("基準（現在的設定）", function(){}, "");
+  run("家具家電全部不買", function(){
+    MOVING.forEach(function(x){ if(!x.must) p.mv[x.id]=0; });
+  }, "省 "+wan(movingFurn()));
+  run("裝修超支 30%", function(){ p.newReno = p.newReno*1.3; }, "");
+  run("裝修超支 50%", function(){ p.newReno = p.newReno*1.5; }, "");
+  run("三戶租金只收到 6 萬", function(){ p.rent = 60000; }, "不影響資金，只影響月結餘");
+  run("房貸壽險改為併入貸款", function(){ p.newIns = 0; }, "不占現金");
+  run("舊屋只賣到保本價", function(){ p.salePrice = breakeven(); }, "");
+  run("舊屋只賣 1,350 萬", function(){ p.salePrice = 1350; }, "");
+  run("銀行只核 7 成、無增貸", function(){ p.ltv=70; p.ltv2=0; }, "");
+
+  var html='<thead><tr><th>情境</th><th>餘裕／缺口</th><th>結果</th></tr></thead><tbody>';
+  out.forEach(function(x,i){
+    var g=x[1], ok=g>=0;
+    var tag = g<0 ? "❌ 付不出來" : (g<300000 ? "⚠️ 剩不到 30 萬" : "✅");
+    html += "<tr"+(i===0?" class='hl'":"")+"><td>"+x[0]
+          + (x[2]?"<br><span style='font-size:11.5px;color:var(--ink2)'>"+x[2]+"</span>":"")
+          + "</td><td class='"+(ok?"pos":"neg")+"'>"+(ok?"+":"−")+n(Math.abs(g))
+          + "</td><td style='text-align:left;font-size:13px'>"+tag+"</td></tr>";
+  });
+  document.getElementById("stressTbl").innerHTML = html+"</tbody>";
+}
+
+function updateMovingNote(){
+  var el=document.getElementById("mvNote");
+  if(!el) return;
+  var must=movingMust(), furn=movingFurn(), dep=mvVal("dep");
+  el.innerHTML = "<b>一半是家具家電，可以延後或不買</b>"
+   + "「一定要付」的只有 <b class='inl'>"+wan(must)+"</b>（租屋押金、首月租金、仲介服務費、搬家費）；"
+   + "其餘 <b class='inl'>"+wan(furn)+"</b>是家具家電，全部不買就省這麼多"
+   + "——但那也是壓力測試裡救不了 7 成缺口的原因。<br>"
+   + "押金 "+wan(dep)+" 退租時拿得回來，所以實際淨支出是 <b class='inl'>"+wan(movingTotal()-dep)+"</b>。<br>"
+   + "分四階段買：搬家當月付掉 "+wan(movingPhase(0))+"（含全部必付項目），"
+   + "之後三階段各 "+wan(movingPhase(1))+"／"+wan(movingPhase(2))+"／"+wan(movingPhase(3))+"。";
+}
+
+function renderMoving(){
+  var html='<thead><tr><th>項目</th><th>金額</th><th>搬走時</th></tr></thead><tbody>';
+  for(var ph=0; ph<4; ph++){
+    var list = MOVING.filter(function(x){ return x.ph===ph; });
+    if(!list.length) continue;
+    html += "<tr class='sep'><th style='text-align:left'>"+PHASE[ph]+"</th><th></th>"
+          + "<th style='text-align:right'>小計 "+n(movingPhase(ph))+"</th></tr>";
+    list.forEach(function(x){
+      var v = mvVal(x.id);
+      html += "<tr"+(v===0?" style='opacity:.45'":"")+"><td>"+x.n
+            + (x.must?" <span style='font-size:11px;color:var(--brick)'>必付</span>":"")
+            + (x.note?"<br><span style='font-size:11.5px;color:var(--ink2)'>"+x.note+"</span>":"")
+            + "</td><td>"+n(v)+"</td><td style='font-size:12px;color:var(--ink2)'>"
+            + (MTAG[x.m]||"—")+"</td></tr>";
+    });
+  }
+  html += "<tr class='tot'><td>合計</td><td>"+n(movingTotal())+"</td><td></td></tr></tbody>";
+  document.getElementById("movingTbl").innerHTML = html;
+
+  // 編輯區（只建一次，之後只更新值）
+  var ed = document.getElementById("movingEdit");
+  if(!ed.dataset.built){
+    ed.innerHTML = MOVING.map(function(x){
+      return '<div class="fld"><label style="width:118px">'+x.n+'</label>'
+           + '<input type="number" step="1000" data-mv="'+x.id+'"><span class="u">元</span></div>';
+    }).join("");
+    ed.dataset.built = "1";
+    ed.querySelectorAll("input[data-mv]").forEach(function(el){
+      el.addEventListener("input", function(){
+        p.mv[el.dataset.mv] = +el.value||0;
+        render();
+      });
+    });
+  }
+  ed.querySelectorAll("input[data-mv]").forEach(function(el){
+    if(document.activeElement!==el) el.value = mvVal(el.dataset.mv);
+  });
 }
 
 function renderOffer(budgetWan){
