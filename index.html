@@ -229,6 +229,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="card" style="margin-top:8px">
    <div class="grid">
     <div class="fld"><label>買房總價</label><input type="number" id="p_newPrice" step="10"><span class="u">萬</span></div>
+    <div class="fld"><label>銀行鑑價</label><input type="number" id="p_newAppr" step="10"><span class="u">萬（0＝同成交價）</span></div>
     <div class="fld"><label>主貸成數</label><input type="number" id="p_ltv" step="0.5"><span class="u">%</span></div>
     <div class="fld"><label>增貸成數</label><input type="number" id="p_ltv2" step="0.5"><span class="u">%</span></div>
     <div class="fld"><label>增貸利率</label><input type="number" id="p_rate2n" step="0.05"><span class="u">%（無寬限）</span></div>
@@ -440,7 +441,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
   <div class="b1" id="o4"><div class="k">ROI</div><div class="v">—</div><div class="n">—</div></div>
  </div>
  <div class="card"><table id="oCostTbl"></table></div>
- <div class="src">貸款基數取「開價」與「估價平均」較低那個（妳投資計算表步驟表 step 4 的規則）。
+ <div class="src">貸款基數取「開價」與「估價平均」較低那個——銀行放款一律成交價與鑑價取其低（妳投資計算表步驟表 step 4 同此規則）。
  ROI 與月現金流主顯示跟妳表格一致（只扣利息），括號內是連二順位本金一起扣的實付數字。</div>
 </section>
 
@@ -479,14 +480,14 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <script>
 var CASES = [{"sheet": "案件", "addr": "新北市蘆洲區復興路290巷6弄4號5樓", "ping": 32.597, "type": "公寓+RC頂", "age": 78.0, "price": 1050.0, "appr": 1171.333333, "apprAvg": 1171.333333, "rentTotal": 5.2, "roi": 0.09719750746, "yield": 0.04615011409, "cashflow": 3.338, "banks": [{"name": "中國信託", "appr": 1220.0}, {"name": "富邦銀行", "appr": 1144.0}, {"name": "台中商銀", "appr": 1150.0}], "loan1": 840, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "cost": {"A.頭期款": 110, "B.仲介費": 21, "C.介紹費": 11.71333333, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.896, "G.裝潢成本": 180, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0, "自備現金": 412.1093333}, "renov": 180}, {"sheet": "四川路", "addr": "新北市板橋區四川路二段130巷25弄15號4樓", "ping": 27.3, "type": "公寓+鐵皮頂", "age": 64.0, "price": 880.0, "appr": 1030, "apprAvg": 1030, "rentTotal": 7.7, "roi": 0.1201036866, "yield": 0.07026231263, "cashflow": 6.116, "banks": [{"name": "中國信託", "appr": 990.0}, {"name": "富邦銀行", "appr": 1100.0}, {"name": "台中商銀", "appr": 1000.0}], "loan1": 704, "rate1": 0.027, "loan2": 0.0, "rate2": 0.0399, "rents": [2.6, 2.6, 2.5, 0.0], "cost": {"A.頭期款": 176, "B.仲介費": 17.6, "C.介紹費": 10.3, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.672, "G.裝潢成本": 270, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 100.0, "自備現金": 611.072}, "renov": 270}, {"sheet": "復興路", "addr": "新北市蘆洲區復興路290巷6弄4號5樓", "ping": 32.597, "type": "公寓+RC頂", "age": 78.0, "price": 915.0, "appr": 1182, "apprAvg": 1182, "rentTotal": 7.5, "roi": 0.1224594364, "yield": 0.06831119545, "cashflow": 5.975, "banks": [{"name": "中國信託", "appr": 1220.0}, {"name": "富邦銀行", "appr": 1144.0}], "loan1": 732, "rate1": 0.025, "loan2": 0.0, "rate2": 0.0399, "rents": [2.5, 2.5, 2.5], "cost": {"A.頭期款": 183, "B.仲介費": 18.3, "C.介紹費": 10.0, "D.交易規費": 6.0, "F.空窗期利息(8個月)": 12.2, "G.裝潢成本": 240, "H.室內裝修許可申請": 16.0, "H.專案顧問費": 100.0, "自備現金": 585.5}, "renov": 240}, {"sheet": "雙城街", "addr": "台北市中山區雙城街16之3號2樓", "ping": 26.02, "type": "公寓", "age": 53.0, "price": 2300.0, "appr": 2027.5, "apprAvg": 2027.5, "rentTotal": 10, "roi": 0.09158415842, "yield": 0.04531722054, "cashflow": 6.166666667, "banks": [{"name": "中國信託", "appr": 2088.0}, {"name": "富邦銀行", "appr": 1967.0}], "loan1": 1840, "rate1": 0.025, "loan2": 0.0, "rate2": 0.0399, "rents": [2.5, 2.5, 2.5, 2.5], "cost": {"A.頭期款": 460, "B.仲介費": 46, "C.交易規費": 6.0, "D.裝潢成本": 280.0, "E.室內裝修許可申請": 16.0, "自備現金": 808}, "renov": 280}, {"sheet": "中興街", "addr": "新北市蘆洲區中興街130巷27號4樓頂", "ping": 24.5, "type": "公寓", "age": 45.0, "price": 1000.0, "appr": 910, "apprAvg": 910, "rentTotal": 5.2, "roi": 0.08938372618, "yield": 0.04595285904, "cashflow": 3.410833333, "banks": [{"name": "中國信託", "appr": 850.0}, {"name": "富邦銀行", "appr": 980.0}, {"name": "台中商銀", "appr": 900.0}], "loan1": 800, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "costTotal": 457.9133333, "cost": {"A.頭期款": 100, "B.仲介費": 20, "C.介紹費": 9.1, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.31333333, "G.裝潢成本": 240, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 240}, {"sheet": "五華街", "addr": "新北市三重區五華街71巷108號4樓", "ping": 23.595, "type": "公寓", "age": 48.0, "price": 880.0, "appr": 950.0, "apprAvg": 1150, "rentTotal": 5.2, "roi": 0.1161291925, "yield": 0.05312831555, "cashflow": 3.585633333, "banks": [{"name": "中國信託", "appr": 1150.0}, {"name": "富邦銀行", "appr": 1150.0}, {"name": "台中商銀", "appr": 1150.0}], "loan1": 704, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "costTotal": 370.5149333, "cost": {"A.頭期款": 76, "B.仲介費": 17.6, "C.介紹費": 9.5, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.91493333, "G.裝潢成本": 180, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 180}, {"sheet": "「五華街」的副本", "addr": "新北市三重區五華街71巷108號4樓", "ping": 23.595, "type": "公寓", "age": 48.0, "price": 880.0, "appr": 950.0, "apprAvg": 966.6666667, "rentTotal": 8, "roi": 0.1681480996, "yield": 0.07620771768, "cashflow": 6.385633333, "banks": [{"name": "中國信託", "appr": 950.0}, {"name": "富邦銀行", "appr": 1000.0}, {"name": "台中商銀", "appr": 950.0}], "loan1": 704, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.5, 2.5, 3.0, 0.0], "costTotal": 455.7149333, "cost": {"A.頭期款": 76, "B.仲介費": 8.8, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.91493333, "G.裝潢成本": 300, "H.專案顧問費": 50.0}, "renov": 300}, {"sheet": "自強路", "addr": "新北市三重區自強路一段320號2.3.4樓", "ping": 25.13, "type": "公寓", "age": 45.0, "price": 1000.0, "appr": 910, "apprAvg": 910, "rentTotal": 6.8, "roi": 0.1161005059, "yield": 0.05754935657, "cashflow": 5.010833333, "banks": [{"name": "中國信託", "appr": 850.0}, {"name": "富邦銀行", "appr": 980.0}, {"name": "台中商銀", "appr": 900.0}], "loan1": 800, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [1.7, 1.7, 1.7, 1.7], "costTotal": 517.9133333, "cost": {"A.頭期款": 100, "B.仲介費": 20, "C.介紹費": 9.1, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.31333333, "G.裝潢成本": 300, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 300}];
-var KEY = "fang-one-v5";
+var KEY = "fang-one-v6";
 
 var DEF = {
   // 賣三重
   salePrice:1400, buyPrice:1250, reno:53.65, smart:10, buyFee:12.2045, friend:30,
   invRate:12, insLoan:20, doSurrender:0, surrender:0, payoff:7.5, mort:1000, land:13.3, brokerRate:4, taxRate:45,
   // 買下一間
-  newPrice:950, ltv:80, ltv2:5, rate2n:3.0, costRate:2.5, newReno:195.7, buffer:15, newIns:0, referFee:9.5, permit:16.5, consult:30,
+  newPrice:950, newAppr:0, ltv:80, ltv2:5, rate2n:3.0, costRate:2.5, newReno:195.7, buffer:15, newIns:0, referFee:9.5, permit:16.5, consult:30,
   mom:129, cash:90, cashW:20,
   // 月收支
   income:125000, rent:75000, netr:82, myRent:29000, oldLoan:14800, credit:20000,
@@ -596,20 +597,24 @@ function mvMove(id, ph){
 
 /* ── 買下一間 ── */
 function fund(){
-  var price=W(p.newPrice);
-  var down = price*(1-p.ltv/100-p.ltv2/100);
+  var price = W(p.newPrice);
+  // 銀行放款基數：成交價與鑑價「取其低」
+  var base = (p.newAppr>0) ? Math.min(price, W(p.newAppr)) : price;
+  var loan = base*(p.ltv/100 + p.ltv2/100);
+  var down = Math.max(0, price - loan);
   var buyCost = price*(p.costRate/100);
   var reno = W(p.newReno)*(1+p.buffer/100);
   var need = down + buyCost + reno + W(p.newIns) + W(p.referFee) + W(p.permit) + W(p.consult) + movingTotal();
   var sellNet = sellAt(p.salePrice).net;
   var src = sellNet + W(p.mom) + W(p.cash) + W(p.cashW);
-  return {down:down, buyCost:buyCost, reno:reno, need:need, sellNet:sellNet, src:src, gap:src-need};
+  return {base:base, loan:loan, down:down, buyCost:buyCost, reno:reno, need:need, sellNet:sellNet, src:src, gap:src-need};
 }
 
 /* ── 月現金流 ── */
 function flows(){
-  var loan1 = W(p.newPrice)*(p.ltv/100);      // 主貸，有寬限期
-  var loan2 = W(p.newPrice)*(p.ltv2/100);     // 增貸，無寬限期
+  var base = (p.newAppr>0) ? Math.min(W(p.newPrice), W(p.newAppr)) : W(p.newPrice);
+  var loan1 = base*(p.ltv/100);      // 主貸，有寬限期
+  var loan2 = base*(p.ltv2/100);     // 增貸，無寬限期
   var mr = (p.newRate/100)/12, mr2 = (p.rate2n/100)/12;
   var nm = Math.max(1, Math.round((p.term-p.grace)*12));
   var n2 = Math.max(1, Math.round(p.term*12));
@@ -871,7 +876,9 @@ function render(){
   var f = fund();
   document.getElementById("fundTbl").innerHTML =
     "<thead><tr><th>資金需求</th><th>金額</th></tr></thead><tbody>"
-    + "<tr><td>買房自備款（"+w(p.newPrice,0)+" 萬的 "+w(100-p.ltv-p.ltv2)+"%）</td><td>"+n(f.down)+"</td></tr>"
+    + "<tr><td>買房自備款<br><span style='font-size:11.5px;color:var(--ink2)'>成交 "+w(p.newPrice,0)+" 萬 − 貸款 "+wan(f.loan)
+    + (p.newAppr>0 && W(p.newAppr)<W(p.newPrice) ? "（依鑑價 "+w(p.newAppr,0)+" 萬 × "+w(p.ltv+p.ltv2)+"%，<b>取低</b>）" : "（"+w(p.ltv+p.ltv2)+"%）")
+    + "</span></td><td>"+n(f.down)+"</td></tr>"
     + "<tr><td>買房交易成本 "+p.costRate+"%</td><td>"+n(f.buyCost)+"</td></tr>"
     + "<tr><td>裝修工程（含 "+p.buffer+"% 緩衝）</td><td>"+n(f.reno)+"</td></tr>"
     + "<tr><td>新屋房貸壽險"+(p.newIns===0?"<br><span style='font-size:11.5px;color:var(--ink2)'>不買——彣錩已有壽險（2026-09-21 確認）</span>":"")+"</td><td>"+n(W(p.newIns))+"</td></tr>"
@@ -993,7 +1000,8 @@ function renderStress(){
   var baseGap = fund().gap;
   var save = JSON.stringify({mv:p.mv, rent:p.rent, newReno:p.newReno, buffer:p.buffer,
                              ltv:p.ltv, ltv2:p.ltv2, salePrice:p.salePrice, newIns:p.newIns,
-                             consult:p.consult, referFee:p.referFee, permit:p.permit});
+                             consult:p.consult, referFee:p.referFee, permit:p.permit,
+                             newAppr:p.newAppr});
   var out = [];
   function run(label, mut, hint){
     var bak = JSON.parse(save);
@@ -1002,6 +1010,7 @@ function renderStress(){
     p.mv=bak.mv; p.rent=bak.rent; p.newReno=bak.newReno; p.buffer=bak.buffer;
     p.ltv=bak.ltv; p.ltv2=bak.ltv2; p.salePrice=bak.salePrice; p.newIns=bak.newIns;
     p.consult=bak.consult; p.referFee=bak.referFee; p.permit=bak.permit;
+    p.newAppr=bak.newAppr;
   }
   run("基準（現在的設定）", function(){}, "");
   run("家具家電全部不買", function(){
@@ -1015,6 +1024,8 @@ function renderStress(){
   run("顧問費照對外報價 50 萬", function(){ p.consult = 50; }, "特助價不適用時");
   run("舊屋只賣到保本價", function(){ p.salePrice = breakeven(); }, "");
   run("舊屋只賣 1,350 萬", function(){ p.salePrice = 1350; }, "");
+  run("鑑價比成交價低 5%", function(){ p.newAppr = p.newPrice*0.95; }, "銀行放款取成交價與鑑價較低者");
+  run("鑑價比成交價低 10%", function(){ p.newAppr = p.newPrice*0.90; }, "");
   run("銀行只核 7 成、無增貸", function(){ p.ltv=70; p.ltv2=0; }, "");
 
   var html='<thead><tr><th>情境</th><th>餘裕／缺口</th><th>結果</th></tr></thead><tbody>';
