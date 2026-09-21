@@ -140,7 +140,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 <section id="s2">
  <h2 class="m">二、賣三重，各種價格會怎樣</h2>
  <div class="card"><table id="sellTbl"></table></div>
- <div class="src">「真實損益」＝ 這筆投資到底賺賠多少（已扣買價、裝修、買入費用、開票成本、違約金、壽險，加回朋友補貼）。
+ <div class="src">「真實損益」＝ 這筆投資到底賺賠多少（已扣買價、裝修、買入費用、開票成本、違約金、壽險信貸餘額，加回朋友補貼與解約退還）。
  「淨到手」＝ 還完房貸後實際拿到的現金（另扣土增稅・代書・規費）。</div>
  <details>
   <summary>▸ 改賣屋的數字</summary>
@@ -154,7 +154,9 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="fld"><label>朋友退稅補貼</label><input type="number" id="p_friend" step="1"><span class="u">萬</span></div>
     <div class="fld"><label>開票成本率</label><input type="number" id="p_invRate" step="0.5"><span class="u">%</span></div>
     <div class="fld"><label>提前清償違約金</label><input type="number" id="p_payoff" step="0.5"><span class="u">萬</span></div>
-    <div class="fld"><label>房貸壽險解約</label><input type="number" id="p_policy" step="1"><span class="u">萬</span></div>
+    <div class="fld"><label>壽險信貸餘額</label><input type="number" id="p_insLoan" step="1"><span class="u">萬</span></div>
+    <div class="fld"><label>要不要解約</label><select id="p_doSurrender"><option value="0">不解約（保單留著）</option><option value="1">解約</option></select><span class="u"></span></div>
+    <div class="fld"><label>解約退還保費</label><input type="number" id="p_surrender" step="1"><span class="u">萬</span></div>
     <div class="fld"><label>房貸餘額</label><input type="number" id="p_mort" step="10"><span class="u">萬</span></div>
     <div class="fld"><label>土增稅代書規費</label><input type="number" id="p_land" step="1"><span class="u">萬</span></div>
     <div class="fld"><label>仲介費率</label><input type="number" id="p_brokerRate" step="0.5"><span class="u">%</span></div>
@@ -171,8 +173,14 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
  </div>
  <div class="note red"><b>這次補上的兩筆，原本漏了</b>
  提前清償違約金 <b class="inl" id="t_payoff">—</b>（2026-09-04 從合庫契約正本確認）<br>
- 房貸壽險解約 <b class="inl" id="t_policy">—</b>（2026-09-21 瓊安確認：用信貸辦的，賣房時要還清）<br>
+ 房貸壽險的信貸餘額 <b class="inl" id="t_policy">—</b>（2026-09-21 瓊安確認：當初用信貸付保費，賣房時要把這筆信貸還清）<br>
  兩筆合計 <span id="t_both">—</span>，保本價從 1,358 萬往上移到 <b class="inl" id="t_be3">—</b>。</div>
+ <div class="note"><b>解不解約是另一件事，還沒決定</b>
+ 那 20 萬是<b class="inl">信貸還欠多少</b>——不管解不解約都要還，所以一定計入。<br>
+ <b class="inl">解約</b>會退還一部分保費（金額要問保險公司，通常比已繳保費少很多），
+ 退多少就從成本裡扣掉多少，保本價跟著往下。上面參數區可以試不同退還金額。<br>
+ <b class="inl">不解約</b>保單留著、保障還在，但房子賣了之後這張房貸壽險保的是什麼、
+ 受益人是誰，要跟保險公司確認——房貸都清償了，保障標的可能已經不存在。</div>
 </section>
 
 <section id="s4">
@@ -331,7 +339,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
   </table>
  </div>
  <div class="note red"><b>對過帳之後修正的三個數字</b>
- ① 保本價 1,358 萬 → <b class="inl" id="t_be4">—</b>（補上違約金與房貸壽險）<br>
+ ① 保本價 1,358 萬 → <b class="inl" id="t_be4">—</b>（補上違約金與壽險信貸餘額）<br>
  ② 賣 1,400 萬的房地合一稅 16 萬 → <b class="inl">81,655</b>（換屋計畫漏算買入費用 122,045、改良支出少算 36,500）<br>
  ③ 賣屋淨到手 280 萬 → <b class="inl">287.4 萬</b>（跟著稅額修正）</div>
 </section>
@@ -339,7 +347,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 <footer>
 2026-09-21 版。數字來源：vault「三重共構宅出售損益試算」（賣屋口徑正本）、
 「換屋隔套收租案_2026-09」（買屋與現金流）、合庫房貸契約正本（違約金）、
-瓊安 2026-09-21 確認（房貸壽險為信貸所辦、賣房時須清償）、投資計算表.xlsx（看物件速算）。<br>
+瓊安 2026-09-21 確認（房貸壽險的保費當初用信貸支付、賣房時須清償該信貸；是否解約尚未決定）、投資計算表.xlsx（看物件速算）。<br>
 單檔 HTML，不需要網路，用瀏覽器打開就能看。改過的數字存在這台電腦的瀏覽器裡，關掉再開還在。
 </footer>
 
@@ -357,7 +365,7 @@ var KEY = "fang-one-v1";
 var DEF = {
   // 賣三重
   salePrice:1400, buyPrice:1250, reno:53.65, smart:10, buyFee:12.2045, friend:30,
-  invRate:12, payoff:7.5, policy:20, mort:1000, land:13.3, brokerRate:4, taxRate:45,
+  invRate:12, insLoan:20, doSurrender:0, surrender:0, payoff:7.5, mort:1000, land:13.3, brokerRate:4, taxRate:45,
   // 買下一間
   newPrice:950, ltv:80, ltv2:5, rate2n:3.0, costRate:2.5, newReno:195.7, buffer:15, newIns:24, moving:47.2,
   mom:129, cash:90,
@@ -392,8 +400,9 @@ function sellAt(priceWan){
   var tax = gain*(p.taxRate/100);
   var invoice = improve*(p.invRate/100);
   var baseIn = acq + improve + deduct - W(p.friend);
-  var pl = X - broker - tax - invoice - W(p.payoff) - W(p.policy) - baseIn;
-  var net = X - W(p.mort) - broker - tax - invoice - W(p.payoff) - W(p.policy) - W(p.land);
+  var sur = p.doSurrender ? W(p.surrender) : 0;   // 解約退還的保費（加回來）
+  var pl = X - broker - tax - invoice - W(p.payoff) - W(p.insLoan) + sur - baseIn;
+  var net = X - W(p.mort) - broker - tax - invoice - W(p.payoff) - W(p.insLoan) + sur - W(p.land);
   return {X:X, broker:broker, gain:gain, tax:tax, invoice:invoice, baseIn:baseIn, pl:pl, net:net};
 }
 function breakeven(){
@@ -504,7 +513,8 @@ function render(){
   var improve = W(p.reno)+W(p.smart);
   var invoice = improve*(p.invRate/100);
   var baseIn = W(p.buyPrice)+improve+W(p.buyFee)-W(p.friend);
-  var totalBack = baseIn+invoice+W(p.payoff)+W(p.policy);
+  var sur = p.doSurrender ? W(p.surrender) : 0;
+  var totalBack = baseIn+invoice+W(p.payoff)+W(p.insLoan)-sur;
   document.getElementById("beTbl").innerHTML =
     "<tbody>"
     + "<tr><td>購入房價</td><td>"+n(W(p.buyPrice))+"</td></tr>"
@@ -515,7 +525,8 @@ function render(){
     + "<tr class='tot'><td>真實基礎投入</td><td>"+n(baseIn)+"</td></tr>"
     + "<tr><td>裝修開票成本（"+w(improve/10000)+" 萬 × "+p.invRate+"%）</td><td>"+n(invoice)+"</td></tr>"
     + "<tr><td>提前清償違約金</td><td>"+n(W(p.payoff))+"</td></tr>"
-    + "<tr><td>房貸壽險解約（信貸辦的，要還清）</td><td>"+n(W(p.policy))+"</td></tr>"
+    + "<tr><td>房貸壽險的信貸餘額（當初用信貸付保費，賣房要還清）</td><td>"+n(W(p.insLoan))+"</td></tr>"
+    + (p.doSurrender ? "<tr><td>解約退還保費</td><td class='pos'>−"+n(sur)+"</td></tr>" : "")
     + "<tr class='tot'><td>合計要回收</td><td>"+n(totalBack)+"</td></tr></tbody>";
   document.getElementById("bePre").textContent =
     "不含稅損平價 ＝ 合計要回收 ÷ (1 − 仲介費 "+p.brokerRate+"%)\n"
@@ -524,8 +535,8 @@ function render(){
     + "再把房地合一稅算進去（"+w(zt,0)+" 萬以上才開始課稅）\n"
     + "            → 實際保本價 "+n(W(be));
   document.getElementById("t_payoff").textContent = w(p.payoff)+" 萬";
-  document.getElementById("t_policy").textContent = w(p.policy)+" 萬";
-  document.getElementById("t_both").textContent = w(p.payoff+p.policy)+" 萬";
+  document.getElementById("t_policy").textContent = w(p.insLoan)+" 萬";
+  document.getElementById("t_both").textContent = w(p.payoff+p.insLoan)+" 萬";
 
   // 四、資金
   var f = fund();
@@ -664,7 +675,7 @@ function bind(){
     var el=document.getElementById("p_"+k);
     if(!el) return;
     el.addEventListener("input", function(){
-      p[k] = (el.type==="number") ? (+el.value||0) : el.value;
+      p[k] = (el.type==="number"||el.tagName==="SELECT") ? (+el.value||0) : el.value;
       render();
     });
   });
