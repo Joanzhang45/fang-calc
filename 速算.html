@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>看房速算</title>
+<style>
+:root{
+ --cream:#FAF6EF;--paper:#FFFDF8;--ink:#2B2723;--ink2:#6A625A;--line:#E3DACB;
+ --brick:#C4593F;--olive:#6B7A52;--mustard:#D9A441;--blue:#4A6B7A;
+ --okbg:#F2F6EC;--okbd:#C9D6B4;--nobg:#FDF0EC;--nobd:#C4593F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);line-height:1.6;padding:0 14px 60px;
+ font-family:"Helvetica Neue","PingFang TC","Noto Sans TC",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:940px;margin:0 auto}
+header{padding:26px 0 16px;border-bottom:3px solid var(--ink);margin-bottom:18px}
+.geo{display:flex;gap:6px;margin-bottom:12px}
+.geo i{display:block;height:12px}
+.geo i:nth-child(1){width:40px;background:var(--brick)}
+.geo i:nth-child(2){width:12px;background:var(--mustard);border-radius:50%}
+.geo i:nth-child(3){width:22px;background:var(--olive)}
+.geo i:nth-child(4){width:12px;background:var(--blue);clip-path:polygon(0 100%,50% 0,100% 100%)}
+h1{font-size:clamp(21px,4vw,27px);font-weight:800;letter-spacing:-.02em}
+.sub{margin-top:6px;color:var(--ink2);font-size:13.5px}
+
+.verdict{border-radius:14px;padding:16px 18px;margin-bottom:18px;border:2px solid}
+.verdict.ok{background:var(--okbg);border-color:var(--okbd)}
+.verdict.no{background:var(--nobg);border-color:var(--nobd)}
+.verdict .big{font-size:clamp(20px,4.4vw,26px);font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+.verdict.ok .big{color:var(--olive)}
+.verdict.no .big{color:var(--brick)}
+.verdict .why{font-size:14px;color:var(--ink2)}
+.verdict .why b{color:var(--ink)}
+.chk{margin-top:10px;display:grid;gap:5px}
+.chk div{font-size:13.5px;display:flex;gap:7px;align-items:flex-start}
+.chk .m{flex:none;width:16px;font-weight:800}
+.chk .pass .m{color:var(--olive)}
+.chk .fail .m{color:var(--brick)}
+.chk .fail{color:var(--brick);font-weight:600}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-bottom:18px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.stat .k{font-size:10.5px;letter-spacing:.07em;color:var(--ink2);font-weight:700}
+.stat .v{font-size:21px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:1px 0}
+.stat .n{font-size:11.5px;color:var(--ink2)}
+.stat.good{border-color:var(--okbd);background:var(--okbg)}.stat.good .v{color:var(--olive)}
+.stat.warn{border-color:var(--nobd);background:var(--nobg)}.stat.warn .v{color:var(--brick)}
+
+section{margin-bottom:22px}
+h2{font-size:16px;font-weight:800;display:flex;align-items:center;gap:9px;margin-bottom:11px}
+h2::before{content:"";width:10px;height:10px;background:var(--brick);flex:none}
+h2.o::before{background:var(--olive)}
+h2.m::before{background:var(--mustard);border-radius:50%}
+h2.b::before{background:var(--blue);clip-path:polygon(0 100%,50% 0,100% 100%)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:9px 16px}
+.fld{display:flex;align-items:center;gap:8px;font-size:13.5px}
+.fld label{flex:none;width:112px;color:var(--ink2)}
+.fld input,.fld select{flex:1;min-width:0;padding:6px 8px;border:1px solid var(--line);border-radius:7px;
+ background:#fff;font:inherit;font-size:13.5px;font-variant-numeric:tabular-nums;text-align:right}
+.fld select{text-align:left}
+.fld input:focus,.fld select:focus{outline:2px solid var(--blue);outline-offset:-1px}
+.fld .u{flex:none;font-size:11.5px;color:var(--ink2);width:52px}
+.hint{font-size:12px;color:var(--ink2);margin-top:8px;padding-left:2px}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:6px 5px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left;font-variant-numeric:normal}
+thead th{font-size:11px;letter-spacing:.05em;color:var(--ink2);border-bottom:2px solid var(--ink)}
+tr.tot td{font-weight:800;border-top:2px solid var(--ink);border-bottom:none;padding-top:8px}
+.pos{color:var(--olive)}.neg{color:var(--brick)}
+.tblwrap{overflow-x:auto}
+
+.bankrow{display:grid;grid-template-columns:1fr 100px 92px;gap:7px;align-items:center;margin-bottom:6px;font-size:13.5px}
+.bankrow input{padding:5px 7px;border:1px solid var(--line);border-radius:6px;background:#fff;font:inherit;
+ font-size:13.5px;text-align:right;font-variant-numeric:tabular-nums;width:100%}
+.bankrow .calc{font-size:12px;color:var(--ink2);text-align:right}
+
+.note{border-left:3px solid var(--mustard);padding:3px 0 3px 12px;font-size:13.5px;color:var(--ink2);margin-bottom:11px}
+.note b{color:var(--ink);display:block;font-size:14px;margin-bottom:2px}
+.note.red{border-left-color:var(--brick)}.note.red b{color:var(--brick)}
+pre{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px;
+ font-size:12px;line-height:1.6;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;white-space:pre-wrap}
+.bar{position:fixed;right:14px;bottom:14px;display:flex;gap:7px;z-index:9}
+.bar button{padding:8px 13px;border:1px solid var(--line);border-radius:9px;background:var(--paper);
+ font:inherit;font-size:12.5px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.bar button:hover{background:#fff}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:20px;background:var(--line);color:var(--ink2);margin-left:6px}
+@media print{.bar{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div class="geo"><i></i><i></i><i></i><i></i></div>
+ <h1>看房速算</h1>
+ <div class="sub">填物件 → 立刻知道「能不能買」和「買得起嗎」。數字只存在這台電腦。</div>
+</header>
+
+<div id="verdict" class="verdict ok">
+ <div class="big">—</div>
+ <div class="why"></div>
+ <div class="chk"></div>
+</div>
+
+<div class="stats">
+ <div class="stat" id="s1"><div class="k">最高可出價</div><div class="v">—</div><div class="n">—</div></div>
+ <div class="stat" id="s2"><div class="k">自備款</div><div class="v">—</div><div class="n">—</div></div>
+ <div class="stat" id="s3"><div class="k">月現金流</div><div class="v">—</div><div class="n">—</div></div>
+ <div class="stat" id="s4"><div class="k">ROI</div><div class="v">—</div><div class="n">—</div></div>
+ <div class="stat" id="s5"><div class="k">總價投報率</div><div class="v">—</div><div class="n">—</div></div>
+</div>
+
+<section>
+ <h2 class="b">壹、這間房</h2>
+ <div class="card">
+  <div class="fld" style="margin-bottom:10px">
+   <label>載入舊案</label>
+   <select id="caseSel"><option value="">（空白，自己填）</option></select>
+   <span class="u"></span>
+  </div>
+  <div class="grid">
+   <div class="fld"><label>地址</label><input type="text" id="p_addr" style="text-align:left"><span class="u"></span></div>
+   <div class="fld"><label>開價</label><input type="number" id="p_price" step="10"><span class="u">萬</span></div>
+   <div class="fld"><label>總坪數</label><input type="number" id="p_ping" step="0.1"><span class="u">坪</span></div>
+   <div class="fld"><label>屋齡</label><input type="number" id="p_age" step="1"><span class="u">年</span></div>
+  </div>
+ </div>
+</section>
+
+<section>
+ <h2 class="m">貳、銀行估價 <span class="tag">跑三家，估價可差 5〜10%</span></h2>
+ <div class="card">
+  <div id="banks"></div>
+  <div class="grid" style="margin-top:11px">
+   <div class="fld"><label>一順位成數</label><input type="number" id="p_ltv1" step="1"><span class="u">%</span></div>
+   <div class="fld"><label>一順位利率</label><input type="number" id="p_rate1" step="0.01"><span class="u">%</span></div>
+   <div class="fld"><label>二順位金額</label><input type="number" id="p_loan2" step="10"><span class="u">萬</span></div>
+   <div class="fld"><label>二順位利率</label><input type="number" id="p_rate2" step="0.01"><span class="u">%</span></div>
+  </div>
+  <div class="hint">貸款基數取「開價」與「估價平均」<b>較低</b>那個。二順位固定月付 1 萬。</div>
+ </div>
+</section>
+
+<section>
+ <h2 class="o">參、隔成幾戶、租多少</h2>
+ <div class="card">
+  <div class="grid">
+   <div class="fld"><label>A 戶月租</label><input type="number" id="p_rA" step="0.1"><span class="u">萬</span></div>
+   <div class="fld"><label>B 戶月租</label><input type="number" id="p_rB" step="0.1"><span class="u">萬</span></div>
+   <div class="fld"><label>C 戶月租</label><input type="number" id="p_rC" step="0.1"><span class="u">萬</span></div>
+   <div class="fld"><label>D 戶月租</label><input type="number" id="p_rD" step="0.1"><span class="u">萬</span></div>
+  </div>
+ </div>
+</section>
+
+<section>
+ <h2>肆、成本</h2>
+ <div class="card">
+  <div class="grid">
+   <div class="fld"><label>裝潢</label><input type="number" id="p_renov" step="10"><span class="u">萬</span></div>
+   <div class="fld"><label>仲介費率</label><input type="number" id="p_agentPct" step="0.1"><span class="u">%</span></div>
+   <div class="fld"><label>介紹費</label><input type="number" id="p_referFee" step="0.1"><span class="u">萬</span></div>
+   <div class="fld"><label>交易規費</label><input type="number" id="p_fee" step="1"><span class="u">萬</span></div>
+   <div class="fld"><label>裝修許可</label><input type="number" id="p_permit" step="0.5"><span class="u">萬</span></div>
+   <div class="fld"><label>專案顧問費</label><input type="number" id="p_consult" step="10"><span class="u">萬</span></div>
+   <div class="fld"><label>空窗期</label><input type="number" id="p_vacancy" step="1"><span class="u">月</span></div>
+  </div>
+  <div class="hint">仲介費、介紹費依開價自動算。空窗期利息＝月繳息 × 空窗月數。</div>
+ </div>
+</section>
+
+<section>
+ <h2 class="o">伍、成本拆解</h2>
+ <div class="card tblwrap"><table id="costTbl"></table></div>
+</section>
+
+<section>
+ <h2 class="b">陸、這筆錢從哪來</h2>
+ <div class="card">
+  <div class="grid">
+   <div class="fld"><label>賣三重淨到手</label><input type="number" id="p_sellNet" step="10"><span class="u">萬</span></div>
+   <div class="fld"><label>媽媽借款</label><input type="number" id="p_mom" step="10"><span class="u">萬</span></div>
+   <div class="fld"><label>帳上現金</label><input type="number" id="p_cash" step="10"><span class="u">萬</span></div>
+  </div>
+  <div class="tblwrap" style="margin-top:11px"><table id="fundTbl"></table></div>
+ </div>
+</section>
+
+<section>
+ <h2 class="m">柒、出價上限怎麼來的</h2>
+ <div class="card">
+  <div class="tblwrap"><table id="capTbl"></table></div>
+  <div class="hint" id="capHint"></div>
+ </div>
+</section>
+
+<section>
+ <h2 class="b">捌、看到物件先問這三句</h2>
+ <div class="card">
+  <pre>銀行（跑三家，估價可差 5〜10%）
+  我是首購，登記自住但會申請公益出租人，
+  屋齡 <span id="qAge">○</span> 年的老公寓，鑑價估多少？成數幾成？年限幾年？
+  房貸壽險能不能併入貸款？
+
+裝修（現場估，不要用單價回推）
+  這個格局分 <span id="qUnits">三</span> 戶，含水電管線與獨立電表，總價抓多少？
+
+建築師／戶政
+  室內裝修許可過得了嗎？（建築法 §77-2，違反罰 6〜30 萬可連續處罰）
+  能不能增編門牌？三個稅籍公益出租人每屋每月各免稅 15,000</pre>
+  <div class="note red" style="margin-top:11px"><b>下斡前三條硬規則</b>
+  ① 先賣後買 — 舊屋交屋前不要下斡，同時持有兩戶成數掉到 5 成且不得有寬限期<br>
+  ② 夫妻共同借款 — 彣錩單獨借 DBR 過不了，合併才過得去<br>
+  ③ 核貸前不增加任何負債 — 不辦信貸、不分期、不動用卡循</div>
+ </div>
+</section>
+
+</div>
+
+<div class="bar">
+ <button id="btnReset">全部還原</button>
+ <button id="btnPrint">列印</button>
+</div>
+
+<script>
+var CASES = [{"sheet": "案件", "addr": "新北市蘆洲區復興路290巷6弄4號5樓", "ping": 32.597, "type": "公寓+RC頂", "age": 78.0, "price": 1050.0, "appr": 1171.333333, "apprAvg": 1171.333333, "rentTotal": 5.2, "roi": 0.09719750746, "yield": 0.04615011409, "cashflow": 3.338, "banks": [{"name": "中國信託", "appr": 1220.0}, {"name": "富邦銀行", "appr": 1144.0}, {"name": "台中商銀", "appr": 1150.0}], "loan1": 840, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "cost": {"A.頭期款": 110, "B.仲介費": 21, "C.介紹費": 11.71333333, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.896, "G.裝潢成本": 180, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0, "自備現金": 412.1093333}, "renov": 180}, {"sheet": "四川路", "addr": "新北市板橋區四川路二段130巷25弄15號4樓", "ping": 27.3, "type": "公寓+鐵皮頂", "age": 64.0, "price": 880.0, "appr": 1030, "apprAvg": 1030, "rentTotal": 7.7, "roi": 0.1201036866, "yield": 0.07026231263, "cashflow": 6.116, "banks": [{"name": "中國信託", "appr": 990.0}, {"name": "富邦銀行", "appr": 1100.0}, {"name": "台中商銀", "appr": 1000.0}], "loan1": 704, "rate1": 0.027, "loan2": 0.0, "rate2": 0.0399, "rents": [2.6, 2.6, 2.5, 0.0], "cost": {"A.頭期款": 176, "B.仲介費": 17.6, "C.介紹費": 10.3, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.672, "G.裝潢成本": 270, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 100.0, "自備現金": 611.072}, "renov": 270}, {"sheet": "復興路", "addr": "新北市蘆洲區復興路290巷6弄4號5樓", "ping": 32.597, "type": "公寓+RC頂", "age": 78.0, "price": 915.0, "appr": 1182, "apprAvg": 1182, "rentTotal": 7.5, "roi": 0.1224594364, "yield": 0.06831119545, "cashflow": 5.975, "banks": [{"name": "中國信託", "appr": 1220.0}, {"name": "富邦銀行", "appr": 1144.0}], "loan1": 732, "rate1": 0.025, "loan2": 0.0, "rate2": 0.0399, "rents": [2.5, 2.5, 2.5], "cost": {"A.頭期款": 183, "B.仲介費": 18.3, "C.介紹費": 10.0, "D.交易規費": 6.0, "F.空窗期利息(8個月)": 12.2, "G.裝潢成本": 240, "H.室內裝修許可申請": 16.0, "H.專案顧問費": 100.0, "自備現金": 585.5}, "renov": 240}, {"sheet": "雙城街", "addr": "台北市中山區雙城街16之3號2樓", "ping": 26.02, "type": "公寓", "age": 53.0, "price": 2300.0, "appr": 2027.5, "apprAvg": 2027.5, "rentTotal": 10, "roi": 0.09158415842, "yield": 0.04531722054, "cashflow": 6.166666667, "banks": [{"name": "中國信託", "appr": 2088.0}, {"name": "富邦銀行", "appr": 1967.0}], "loan1": 1840, "rate1": 0.025, "loan2": 0.0, "rate2": 0.0399, "rents": [2.5, 2.5, 2.5, 2.5], "cost": {"A.頭期款": 460, "B.仲介費": 46, "C.交易規費": 6.0, "D.裝潢成本": 280.0, "E.室內裝修許可申請": 16.0, "自備現金": 808}, "renov": 280}, {"sheet": "中興街", "addr": "新北市蘆洲區中興街130巷27號4樓頂", "ping": 24.5, "type": "公寓", "age": 45.0, "price": 1000.0, "appr": 910, "apprAvg": 910, "rentTotal": 5.2, "roi": 0.08938372618, "yield": 0.04595285904, "cashflow": 3.410833333, "banks": [{"name": "中國信託", "appr": 850.0}, {"name": "富邦銀行", "appr": 980.0}, {"name": "台中商銀", "appr": 900.0}], "loan1": 800, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "costTotal": 457.9133333, "cost": {"A.頭期款": 100, "B.仲介費": 20, "C.介紹費": 9.1, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.31333333, "G.裝潢成本": 240, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 240}, {"sheet": "五華街", "addr": "新北市三重區五華街71巷108號4樓", "ping": 23.595, "type": "公寓", "age": 48.0, "price": 880.0, "appr": 950.0, "apprAvg": 1150, "rentTotal": 5.2, "roi": 0.1161291925, "yield": 0.05312831555, "cashflow": 3.585633333, "banks": [{"name": "中國信託", "appr": 1150.0}, {"name": "富邦銀行", "appr": 1150.0}, {"name": "台中商銀", "appr": 1150.0}], "loan1": 704, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "costTotal": 370.5149333, "cost": {"A.頭期款": 76, "B.仲介費": 17.6, "C.介紹費": 9.5, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.91493333, "G.裝潢成本": 180, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 180}, {"sheet": "「五華街」的副本", "addr": "新北市三重區五華街71巷108號4樓", "ping": 23.595, "type": "公寓", "age": 48.0, "price": 880.0, "appr": 950.0, "apprAvg": 966.6666667, "rentTotal": 8, "roi": 0.1681480996, "yield": 0.07620771768, "cashflow": 6.385633333, "banks": [{"name": "中國信託", "appr": 950.0}, {"name": "富邦銀行", "appr": 1000.0}, {"name": "台中商銀", "appr": 950.0}], "loan1": 704, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.5, 2.5, 3.0, 0.0], "costTotal": 455.7149333, "cost": {"A.頭期款": 76, "B.仲介費": 8.8, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.91493333, "G.裝潢成本": 300, "H.專案顧問費": 50.0}, "renov": 300}, {"sheet": "自強路", "addr": "新北市三重區自強路一段320號2.3.4樓", "ping": 25.13, "type": "公寓", "age": 45.0, "price": 1000.0, "appr": 910, "apprAvg": 910, "rentTotal": 6.8, "roi": 0.1161005059, "yield": 0.05754935657, "cashflow": 5.010833333, "banks": [{"name": "中國信託", "appr": 850.0}, {"name": "富邦銀行", "appr": 980.0}, {"name": "台中商銀", "appr": 900.0}], "loan1": 800, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [1.7, 1.7, 1.7, 1.7], "costTotal": 517.9133333, "cost": {"A.頭期款": 100, "B.仲介費": 20, "C.介紹費": 9.1, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.31333333, "G.裝潢成本": 300, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 300}];
+var KEY = "fang-calc-v1";
+
+var DEF = {
+  addr:"", price:950, ping:24, age:48,
+  banks:[{name:"中國信託",appr:0},{name:"富邦銀行",appr:0},{name:"台中商銀",appr:0}],
+  ltv1:80, rate1:2.8, loan2:0, rate2:3.99,
+  rA:2.5, rB:2.5, rC:2.5, rD:0,
+  renov:196, agentPct:2, referFee:9.5, fee:8, permit:16.5, consult:50, vacancy:8,
+  sellNet:280, mom:129, cash:90
+};
+
+var state = { p: JSON.parse(JSON.stringify(DEF)) };
+
+function w1(v){ return (Math.round(v*10)/10).toLocaleString("en-US"); }
+function pctS(v){ return (Math.round(v*1000)/10).toFixed(1)+"%"; }
+
+function apprAvgOf(banks){
+  var a = banks.map(function(b){return +b.appr||0;}).filter(function(x){return x>0;});
+  return a.length ? a.reduce(function(s,x){return s+x;},0)/a.length : 0;
+}
+
+function costAt(price, banks){
+  var p = state.p;
+  var avg = apprAvgOf(banks);
+  var base = avg>0 ? Math.min(price, avg) : price;
+  var l1 = base*(p.ltv1/100), l2 = +p.loan2||0;
+  var down = Math.max(0, price - l1 - l2);
+  var mInt = l1*(p.rate1/100)/12 + l2*(p.rate2/100)/12;
+  return {
+    base:base, loan1:l1, loan2:l2, down:down, mInt:mInt,
+    agentFee: price*(p.agentPct/100),
+    referFee: +p.referFee||0,
+    vacInt: mInt*(+p.vacancy||0),
+    total: down + price*(p.agentPct/100) + (+p.referFee||0)
+         + (+p.fee||0) + mInt*(+p.vacancy||0) + (+p.renov||0) + (+p.permit||0) + (+p.consult||0)
+  };
+}
+
+function solveCap(budget, banks){
+  if(costAt(0, banks).total > budget) return 0;
+  var lo=0, hi=Math.max(budget*6, 6000);
+  for(var i=0;i<60;i++){
+    var mid=(lo+hi)/2;
+    if(costAt(mid, banks).total <= budget) lo=mid; else hi=mid;
+  }
+  return Math.floor(lo);
+}
+
+function calc(){
+  var p = state.p;
+  var c = costAt(p.price, p.banks);
+  var mPay2 = c.loan2>0 ? 1 : 0;
+  var rent = (+p.rA||0)+(+p.rB||0)+(+p.rC||0)+(+p.rD||0);
+  var units = [p.rA,p.rB,p.rC,p.rD].filter(function(x){return (+x||0)>0;}).length;
+  var cashflow = rent - c.mInt;              // 妳表格口徑：只扣利息
+  var cashflowNet = rent - c.mInt - mPay2;   // 實際要付（含二順位本金）
+  var srcTotal = (+p.sellNet||0)+(+p.mom||0)+(+p.cash||0);
+
+  var cost = [
+    ["A. 頭期款", c.down],
+    ["B. 仲介費（"+p.agentPct+"%）", c.agentFee],
+    ["C. 介紹費", c.referFee],
+    ["D. 交易規費", +p.fee||0],
+    ["E. 空窗期利息（"+p.vacancy+" 個月）", c.vacInt],
+    ["F. 裝潢成本", +p.renov||0],
+    ["G. 室內裝修許可", +p.permit||0],
+    ["H. 專案顧問費", +p.consult||0]
+  ];
+
+  return {
+    apprAvg: apprAvgOf(p.banks), base:c.base, loan1:c.loan1, loan2:c.loan2,
+    down:c.down, mInt:c.mInt, mPay2:mPay2, cost:cost, costTotal:c.total,
+    rent:rent, units:units, cashflow:cashflow, cashflowNet:cashflowNet,
+    yieldRate: p.price>0 ? rent*12/p.price : 0,
+    roi: c.total>0 ? (rent-c.mInt)*12/c.total : 0,
+    roiNet: c.total>0 ? (rent-c.mInt-mPay2)*12/c.total : 0,
+    srcTotal:srcTotal, gap: srcTotal - c.total,
+    capPrice: solveCap(srcTotal, p.banks)
+  };
+}
+
+function setStat(id, v, n, good){
+  var el = document.getElementById(id);
+  el.querySelector(".v").textContent = v;
+  el.querySelector(".n").textContent = n;
+  el.className = "stat " + (good ? "good" : "warn");
+}
+
+function render(){
+  var p = state.p, r = calc();
+
+  var checks = [];
+  checks.push({ok: r.gap>=0,
+    t: r.gap>=0 ? "資金夠：需要 "+w1(r.costTotal)+" 萬，手上有 "+w1(r.srcTotal)+" 萬，剩 "+w1(r.gap)+" 萬"
+                : "資金不夠：需要 "+w1(r.costTotal)+" 萬，手上只有 "+w1(r.srcTotal)+" 萬，差 "+w1(-r.gap)+" 萬"});
+  checks.push({ok: r.cashflowNet>0,
+    t: r.cashflowNet>0 ? "月現金流為正："+w1(r.cashflowNet)+" 萬／月（含二順位本金）"
+                       : "月現金流是負的："+w1(r.cashflowNet)+" 萬／月，每月要自己貼錢"});
+  var apprOK = r.apprAvg>0;
+  checks.push({ok: apprOK,
+    t: apprOK ? "銀行估價平均 "+w1(r.apprAvg)+" 萬"+(r.apprAvg<p.price ? "（比開價低 "+w1(p.price-r.apprAvg)+" 萬，差額要自己補）" : "（高於開價，貸款以開價為準）")
+              : "還沒填銀行估價 ← 先去問，這是最大變數"});
+  checks.push({ok: r.roi>=0.10,
+    t: "ROI "+pctS(r.roi)+(r.roi>=0.10 ? "，過 10% 門檻" : "，低於 10% 門檻")});
+
+  var allOK = checks.every(function(c){return c.ok;});
+  var v = document.getElementById("verdict");
+  v.className = "verdict " + (allOK ? "ok" : "no");
+  v.querySelector(".big").textContent = allOK ? "可以下斡" : "先別下斡";
+  v.querySelector(".why").innerHTML = allOK
+    ? "四項都過。出價守住 <b>"+w1(r.capPrice)+" 萬</b>以內。"
+    : "下面標紅的先解決。";
+  v.querySelector(".chk").innerHTML = checks.map(function(c){
+    return '<div class="'+(c.ok?"pass":"fail")+'"><span class="m">'+(c.ok?"✓":"✕")+'</span><span>'+c.t+'</span></div>';
+  }).join("");
+
+  setStat("s1", w1(r.capPrice)+" 萬",
+    p.price<=r.capPrice ? "現在開價 "+w1(p.price)+" 萬，還有 "+w1(r.capPrice-p.price)+" 萬空間"
+                        : "現在開價 "+w1(p.price)+" 萬，超過 "+w1(p.price-r.capPrice)+" 萬",
+    p.price<=r.capPrice);
+  setStat("s2", w1(r.down)+" 萬", "貸款基數 "+w1(r.base)+" 萬 × "+p.ltv1+"%", r.down<=r.srcTotal);
+  setStat("s3", (r.cashflow>=0?"+":"")+w1(r.cashflow)+" 萬", r.mPay2>0
+    ? "只扣利息（妳表格口徑）；二順位本金也扣是 "+(r.cashflowNet>=0?"+":"")+w1(r.cashflowNet)+" 萬"
+    : "月租 "+w1(r.rent)+" − 月繳息 "+w1(r.mInt), r.cashflowNet>0);
+  setStat("s4", pctS(r.roi), r.mPay2>0
+    ? "只扣利息（妳表格口徑）；連二順位本金一起扣是 "+pctS(r.roiNet)
+    : "（年租−年息）÷ 總投入 "+w1(r.costTotal)+" 萬", r.roi>=0.10);
+  setStat("s5", pctS(r.yieldRate), "年租 ÷ 開價", r.yieldRate>=0.05);
+
+  var ct = '<thead><tr><th>項目</th><th>金額（萬）</th></tr></thead><tbody>';
+  r.cost.forEach(function(x){ ct += "<tr><td>"+x[0]+"</td><td>"+w1(x[1])+"</td></tr>"; });
+  ct += '<tr class="tot"><td>總投入</td><td>'+w1(r.costTotal)+"</td></tr></tbody>";
+  document.getElementById("costTbl").innerHTML = ct;
+
+  var ft = '<thead><tr><th>來源</th><th>金額（萬）</th></tr></thead><tbody>'
+    + '<tr><td>賣三重淨到手</td><td class="pos">'+w1(p.sellNet)+"</td></tr>"
+    + '<tr><td>媽媽借款</td><td class="pos">'+w1(p.mom)+"</td></tr>"
+    + '<tr><td>帳上現金</td><td class="pos">'+w1(p.cash)+"</td></tr>"
+    + '<tr class="tot"><td>合計</td><td class="pos">'+w1(r.srcTotal)+"</td></tr>"
+    + '<tr><td>減：總投入</td><td class="neg">−'+w1(r.costTotal)+"</td></tr>"
+    + '<tr class="tot"><td>'+(r.gap>=0?"剩下":"還差")+'</td><td class="'+(r.gap>=0?"pos":"neg")+'">'
+    + (r.gap>=0?"+":"−")+w1(Math.abs(r.gap))+"</td></tr></tbody>";
+  document.getElementById("fundTbl").innerHTML = ft;
+
+  var baseAppr = r.apprAvg>0 ? r.apprAvg : p.price;
+  var cp = '<thead><tr><th>若銀行估價</th><th>最高可出價</th><th>可溢價</th></tr></thead><tbody>';
+  [-0.15,-0.10,-0.05,0,0.05,0.10].forEach(function(d){
+    var a = Math.round(baseAppr*(1+d));
+    var cap = solveCap(r.srcTotal, [{name:"x",appr:a}]);
+    var prem = cap - a;
+    cp += "<tr"+(d===0?' style="background:#F2F6EC;font-weight:700"':"")+"><td>"+w1(a)+" 萬"+(d===0?"　← 目前":"")+"</td><td>"
+       + w1(cap)+" 萬</td><td class='"+(prem>=0?"pos":"neg")+"'>"+(prem>=0?"+":"")+w1(prem)+" 萬</td></tr>";
+  });
+  cp += "</tbody>";
+  document.getElementById("capTbl").innerHTML = cp;
+  document.getElementById("capHint").innerHTML =
+    "貸款基數取「開價」與「估價平均」較低那個，所以估價再高，出價也會被自備款卡住。目前手上資金 <b>"
+    + w1(r.srcTotal)+" 萬</b>。";
+
+  document.getElementById("qAge").textContent = p.age || "○";
+  document.getElementById("qUnits").textContent = ["零","一","兩","三","四"][r.units] || r.units;
+
+  p.banks.forEach(function(b,i){
+    var el = document.getElementById("bcalc"+i);
+    if(el){
+      var a = +b.appr||0;
+      el.textContent = a>0 ? "可貸 "+w1(Math.min(p.price,a)*(p.ltv1/100))+" 萬" : "";
+    }
+  });
+
+  save();
+}
+
+function renderBanks(){
+  var p = state.p;
+  document.getElementById("banks").innerHTML = p.banks.map(function(b,i){
+    return '<div class="bankrow">'
+      + '<input type="text" value="'+(b.name||"")+'" data-bi="'+i+'" data-bk="name" style="text-align:left">'
+      + '<input type="number" step="10" value="'+(b.appr||"")+'" data-bi="'+i+'" data-bk="appr" placeholder="估價">'
+      + '<span class="calc" id="bcalc'+i+'"></span></div>';
+  }).join("");
+  document.querySelectorAll("#banks input").forEach(function(el){
+    el.addEventListener("input", function(){
+      var i = +el.dataset.bi, k = el.dataset.bk;
+      state.p.banks[i][k] = (k==="appr") ? (+el.value||0) : el.value;
+      render();
+    });
+  });
+}
+
+var FIELDS = ["addr","price","ping","age","ltv1","rate1","loan2","rate2",
+  "rA","rB","rC","rD","renov","agentPct","referFee","fee","permit","consult","vacancy",
+  "sellNet","mom","cash"];
+
+function fill(){
+  FIELDS.forEach(function(k){
+    var el = document.getElementById("p_"+k);
+    if(el) el.value = state.p[k];
+  });
+  renderBanks();
+}
+function bind(){
+  FIELDS.forEach(function(k){
+    var el = document.getElementById("p_"+k);
+    if(!el) return;
+    el.addEventListener("input", function(){
+      state.p[k] = (el.type==="number") ? (+el.value||0) : el.value;
+      render();
+    });
+  });
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state.p)); }catch(e){}
+}
+function load(){
+  try{
+    var s = JSON.parse(localStorage.getItem(KEY));
+    if(s && typeof s==="object"){
+      Object.keys(DEF).forEach(function(k){ if(s[k]!==undefined) state.p[k]=s[k]; });
+      if(!Array.isArray(state.p.banks) || !state.p.banks.length)
+        state.p.banks = JSON.parse(JSON.stringify(DEF.banks));
+    }
+  }catch(e){}
+}
+
+function initCases(){
+  var sel = document.getElementById("caseSel");
+  CASES.forEach(function(c,i){
+    var o = document.createElement("option");
+    o.value = i;
+    o.textContent = c.sheet + "　" + (c.addr||"").slice(0,20);
+    sel.appendChild(o);
+  });
+  sel.addEventListener("change", function(){
+    if(sel.value==="") return;
+    var c = CASES[+sel.value], p = state.p;
+    p.addr = c.addr||"";
+    p.price = c.price||0;
+    p.ping = c.ping||0;
+    p.age = c.age||0;
+    p.banks = (c.banks&&c.banks.length)
+      ? c.banks.map(function(b){return {name:b.name,appr:b.appr};})
+      : JSON.parse(JSON.stringify(DEF.banks));
+    var rents = c.rents||[];
+    p.rA = rents[0]||0; p.rB = rents[1]||0; p.rC = rents[2]||0; p.rD = rents[3]||0;
+    p.renov = c.renov||0;
+    if(c.rate1) p.rate1 = Math.round(c.rate1*10000)/100;
+    if(c.rate2) p.rate2 = Math.round(c.rate2*10000)/100;
+    p.loan2 = c.loan2||0;
+    var cost = c.cost||{};
+    Object.keys(cost).forEach(function(k){
+      if(k.indexOf("交易規費")>=0) p.fee = cost[k];
+      if(k.indexOf("介紹費")>=0) p.referFee = cost[k];
+      if(k.indexOf("室內裝修許可")>=0) p.permit = cost[k];
+      if(k.indexOf("專案顧問")>=0) p.consult = cost[k];
+    });
+    fill(); render();
+  });
+}
+
+document.getElementById("btnReset").addEventListener("click", function(){
+  if(!confirm("把所有數字還原成預設值？")) return;
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  state.p = JSON.parse(JSON.stringify(DEF));
+  document.getElementById("caseSel").value = "";
+  fill(); render();
+});
+document.getElementById("btnPrint").addEventListener("click", function(){ window.print(); });
+
+load(); fill(); bind(); initCases(); render();
+</script>
+</body>
+</html>
