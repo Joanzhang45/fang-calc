@@ -118,7 +118,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <nav>
  <a href="#s1">結論</a><a href="#s2">賣三重</a><a href="#s3">保本價</a>
- <a href="#s4">買下一間</a><a href="#s4b">搬遷採購</a><a href="#s5">每月剩多少</a><a href="#s6">還媽媽</a>
+ <a href="#s4">買下一間</a><a href="#s4b">搬遷採購</a><a href="#s4c">已含在別處</a><a href="#s5">每月剩多少</a><a href="#s6">還媽媽</a>
  <a href="#s7">風險</a><a href="#s8">硬規則</a><a href="#s9">問三個人</a>
  <a href="#s10">看物件速算</a><a href="#s11">來源</a>
 </nav>
@@ -198,11 +198,49 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="fld"><label>新屋裝修</label><input type="number" id="p_newReno" step="10"><span class="u">萬</span></div>
     <div class="fld"><label>裝修緩衝</label><input type="number" id="p_buffer" step="1"><span class="u">%</span></div>
     <div class="fld"><label>新屋房貸壽險</label><input type="number" id="p_newIns" step="1"><span class="u">萬</span></div>
+    <div class="fld"><label>介紹費</label><input type="number" id="p_referFee" step="0.5"><span class="u">萬</span></div>
+    <div class="fld"><label>室內裝修許可</label><input type="number" id="p_permit" step="0.5"><span class="u">萬</span></div>
+    <div class="fld"><label>小吳哥顧問費</label><input type="number" id="p_consult" step="1"><span class="u">萬</span></div>
     <div class="fld"><label>媽媽借款</label><input type="number" id="p_mom" step="10"><span class="u">萬</span></div>
-    <div class="fld"><label>帳上現金</label><input type="number" id="p_cash" step="10"><span class="u">萬</span></div>
+    <div class="fld"><label>瓊安帳上現金</label><input type="number" id="p_cash" step="10"><span class="u">萬</span></div>
+    <div class="fld"><label>彣錩手上現金</label><input type="number" id="p_cashW" step="1"><span class="u">萬</span></div>
    </div>
   </div>
  </details>
+</section>
+
+<section id="s4c">
+ <h2 class="o">四之三、哪些成本已經算在別的地方</h2>
+ <div class="card">
+  <table>
+   <thead><tr><th>項目</th><th>在哪裡算</th></tr></thead>
+   <tbody>
+    <tr><td>裝修期的房貸利息</td><td style="text-align:left">第五節「裝修期月結餘」已逐月扣掉，<b>不另列空窗期利息</b>（妳 xlsx 因為是單筆投報算法才要另列，這裡逐月走時間軸，重複列會多算一次）</td></tr>
+    <tr><td>仲介費・契稅・代書・規費<br>履保・火險・設定</td><td style="text-align:left">第四節「買房交易成本 2.5%」一口價涵蓋</td></tr>
+    <tr><td>自己住的房租</td><td style="text-align:left">第五節每月扣 29,000；第一個月的押金與首月租金另在搬遷採購裡</td></tr>
+    <tr><td>裝修超支的緩衝</td><td style="text-align:left">第四節「裝修工程含 15% 緩衝」已含</td></tr>
+   </tbody>
+  </table>
+ </div>
+ <div class="note"><b>這幾項整套系統從沒建模過，要自己留意</b>
+ 代書費、履約保證、火險、房屋稅地價稅、水電瓦斯分表、消防、修繕準備金、
+ 空屋期管理費、謄本調閱、測量圖——這十項<b class="inl">不只換屋計畫沒有，
+ 妳的 xlsx 和 Ragic 投資物件表單也都沒有欄位</b>。<br>
+ 其中代書費、履約保證、火險多半已含在「買房交易成本 2.5%」那一口價裡；
+ 但<b class="inl">水電瓦斯分表與消防</b>是隔三戶才會有的支出，
+ 看到物件問裝修報價時要確認有沒有包含。</div>
+
+ <div class="note red"><b>2026-09-21 補上的三項，原本的換屋計畫全部漏列</b>
+ 介紹費 <b class="inl">9.5 萬</b>、室內裝修許可 <b class="inl">16.5 萬</b>、
+ 小吳哥顧問費 <b class="inl">30 萬</b>——這三項妳自己的
+ <b class="inl">投資計算表.xlsx</b> 本來就有，是換屋資金計畫那份沒抄過來。<br>
+ <span id="t_miss">—</span></div>
+ <div class="note"><b>顧問費 25〜30 萬是特助價，不是猜的</b>
+ 對外標準報價是 <b class="inl">50 萬</b>（換屋案與正義北路合資案都是這個數），
+ <b class="inl">妳是小吳哥的特助所以收 25〜30 萬</b>（2026-09-21 妳確認）。
+ 蘆洲那筆學員實案報表收 30 萬，跟這個區間吻合。<br>
+ 這裡預設填 <b class="inl">30 萬</b>（取區間上緣，保守）。收 25 萬的話餘裕多 5 萬。<br>
+ <span style="color:var(--ink2)">vault 舊筆記裡那條「小吳哥顧問費實收金額待問」已經有答案，我一併更新了。</span></div>
 </section>
 
 <section id="s4b">
@@ -381,15 +419,15 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <script>
 var CASES = __CASES__;
-var KEY = "fang-one-v2";
+var KEY = "fang-one-v4";
 
 var DEF = {
   // 賣三重
   salePrice:1400, buyPrice:1250, reno:53.65, smart:10, buyFee:12.2045, friend:30,
   invRate:12, insLoan:20, doSurrender:0, surrender:0, payoff:7.5, mort:1000, land:13.3, brokerRate:4, taxRate:45,
   // 買下一間
-  newPrice:950, ltv:80, ltv2:5, rate2n:3.0, costRate:2.5, newReno:195.7, buffer:15, newIns:0,
-  mom:129, cash:90,
+  newPrice:950, ltv:80, ltv2:5, rate2n:3.0, costRate:2.5, newReno:195.7, buffer:15, newIns:0, referFee:9.5, permit:16.5, consult:30,
+  mom:129, cash:90, cashW:20,
   // 月收支
   income:125000, rent:75000, netr:82, myRent:29000, oldLoan:14800, credit:20000,
   living:64500, newRate:2.8, grace:3, term:30,
@@ -482,9 +520,9 @@ function fund(){
   var down = price*(1-p.ltv/100-p.ltv2/100);
   var buyCost = price*(p.costRate/100);
   var reno = W(p.newReno)*(1+p.buffer/100);
-  var need = down + buyCost + reno + W(p.newIns) + movingTotal();
+  var need = down + buyCost + reno + W(p.newIns) + W(p.referFee) + W(p.permit) + W(p.consult) + movingTotal();
   var sellNet = sellAt(p.salePrice).net;
-  var src = sellNet + W(p.mom) + W(p.cash);
+  var src = sellNet + W(p.mom) + W(p.cash) + W(p.cashW);
   return {down:down, buyCost:buyCost, reno:reno, need:need, sellNet:sellNet, src:src, gap:src-need};
 }
 
@@ -603,12 +641,16 @@ function render(){
     + "<tr><td>買房交易成本 "+p.costRate+"%</td><td>"+n(f.buyCost)+"</td></tr>"
     + "<tr><td>裝修工程（含 "+p.buffer+"% 緩衝）</td><td>"+n(f.reno)+"</td></tr>"
     + "<tr><td>新屋房貸壽險"+(p.newIns===0?"<br><span style='font-size:11.5px;color:var(--ink2)'>不買——彣錩已有壽險（2026-09-21 確認）</span>":"")+"</td><td>"+n(W(p.newIns))+"</td></tr>"
+    + "<tr><td>介紹費</td><td>"+n(W(p.referFee))+"</td></tr>"
+    + "<tr><td>室內裝修許可申請<br><span style='font-size:11.5px;color:var(--ink2)'>隔三戶一定要申請，建築法 §77-2</span></td><td>"+n(W(p.permit))+"</td></tr>"
+    + "<tr><td>小吳哥專案顧問費<br><span style='font-size:11.5px;color:var(--ink2)'>對外報價 50 萬，妳是他特助所以收 25〜30 萬</span></td><td>"+n(W(p.consult))+"</td></tr>"
     + "<tr><td>搬遷與採購（明細見下一節）</td><td>"+n(movingTotal())+"</td></tr>"
     + "<tr class='tot'><td>需求合計</td><td>"+n(f.need)+"</td></tr>"
     + "<tr class='sep'><th style='text-align:left'>資金來源</th><th></th></tr>"
     + "<tr><td>賣三重淨到手（成交 "+w(p.salePrice,0)+" 萬）</td><td class='pos'>"+n(f.sellNet)+"</td></tr>"
     + "<tr><td>媽媽借款</td><td class='pos'>"+n(W(p.mom))+"</td></tr>"
-    + "<tr><td>帳上現金</td><td class='pos'>"+n(W(p.cash))+"</td></tr>"
+    + "<tr><td>瓊安帳上現金<br><span style='font-size:11.5px;color:var(--ink2)'>86 萬信貸＋4 萬自有</span></td><td class='pos'>"+n(W(p.cash))+"</td></tr>"
+    + "<tr><td>彣錩手上現金</td><td class='pos'>"+n(W(p.cashW))+"</td></tr>"
     + "<tr class='tot'><td>來源合計</td><td class='pos'>"+n(f.src)+"</td></tr>"
     + "<tr class='tot'><td>"+(f.gap>=0?"餘裕":"缺口")+"</td><td class='"+(f.gap>=0?"pos":"neg")+"'>"
     + (f.gap>=0?"+":"−")+n(Math.abs(f.gap))+"　"+wan(Math.abs(f.gap))+"</td></tr></tbody>";
@@ -644,6 +686,19 @@ function render(){
     + "趕在第 "+graceEndM+" 個月寬限期滿、月付跳增 "+n(fl.jump)+" 之前結束，兩件事不要撞在一起\n\n"
     + "（"+w(p.mom,0)+" 萬在贈與稅免稅額 244 萬／年以內，就算被認定為贈與也不課稅，\n"
     + "　但借據與匯款紀錄要留）";
+
+  // 四之三、漏列三項的衝擊
+  (function(){
+    var el=document.getElementById("t_miss");
+    if(!el) return;
+    var bakR=p.referFee, bakP=p.permit, bakC=p.consult;
+    p.referFee=0; p.permit=0; p.consult=0;
+    var without = fund().gap;
+    p.referFee=bakR; p.permit=bakP; p.consult=bakC;
+    var with_ = fund().gap;
+    el.innerHTML = "補上之後餘裕從 <b class='inl'>"+wan(without)+"</b> 掉到 <b class='inl'>"
+      + (with_>=0 ? wan(with_) : "缺口 "+wan(-with_)) + "</b>，少了 "+wan(without-with_)+"。";
+  })();
 
   // 七、風險①（7 成）
   (function(){
@@ -690,7 +745,8 @@ function render(){
 function renderStress(){
   var baseGap = fund().gap;
   var save = JSON.stringify({mv:p.mv, rent:p.rent, newReno:p.newReno, buffer:p.buffer,
-                             ltv:p.ltv, ltv2:p.ltv2, salePrice:p.salePrice, newIns:p.newIns});
+                             ltv:p.ltv, ltv2:p.ltv2, salePrice:p.salePrice, newIns:p.newIns,
+                             consult:p.consult, referFee:p.referFee, permit:p.permit});
   var out = [];
   function run(label, mut, hint){
     var bak = JSON.parse(save);
@@ -698,6 +754,7 @@ function renderStress(){
     out.push([label, fund().gap, hint||""]);
     p.mv=bak.mv; p.rent=bak.rent; p.newReno=bak.newReno; p.buffer=bak.buffer;
     p.ltv=bak.ltv; p.ltv2=bak.ltv2; p.salePrice=bak.salePrice; p.newIns=bak.newIns;
+    p.consult=bak.consult; p.referFee=bak.referFee; p.permit=bak.permit;
   }
   run("基準（現在的設定）", function(){}, "");
   run("家具家電全部不買", function(){
@@ -707,6 +764,8 @@ function renderStress(){
   run("裝修超支 50%", function(){ p.newReno = p.newReno*1.5; }, "");
   run("三戶租金只收到 6 萬", function(){ p.rent = 60000; }, "不影響資金，只影響月結餘");
   run("新屋還是買了房貸壽險", function(){ p.newIns = 24; }, "目前設定為不買");
+  run("顧問費收 25 萬（區間下緣）", function(){ p.consult = 25; }, "目前填 30 萬");
+  run("顧問費照對外報價 50 萬", function(){ p.consult = 50; }, "特助價不適用時");
   run("舊屋只賣到保本價", function(){ p.salePrice = breakeven(); }, "");
   run("舊屋只賣 1,350 萬", function(){ p.salePrice = 1350; }, "");
   run("銀行只核 7 成、無增貸", function(){ p.ltv=70; p.ltv2=0; }, "");
