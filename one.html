@@ -880,12 +880,23 @@ function render(){
     + "<tr><td>房貸壽險的信貸餘額（當初用信貸付保費，賣房要還清）</td><td>"+n(W(p.insLoan))+"</td></tr>"
     + (p.doSurrender ? "<tr><td>解約退還保費</td><td class='pos'>−"+n(sur)+"</td></tr>" : "")
     + "<tr class='tot'><td>合計要回收</td><td>"+n(totalBack)+"</td></tr></tbody>";
+  var taxBase = W(p.buyPrice)+W(p.buyFee)+improve;
   document.getElementById("bePre").textContent =
-    "不含稅損平價 ＝ 合計要回收 ÷ (1 − 仲介費 "+p.brokerRate+"%)\n"
-    + "            ＝ "+n(totalBack)+" ÷ "+(1-p.brokerRate/100).toFixed(2)+"\n"
-    + "            ＝ "+n(totalBack/(1-p.brokerRate/100))+"\n\n"
-    + "再把房地合一稅算進去（"+w(zt,0)+" 萬以上才開始課稅）\n"
-    + "            → 實際保本價 "+n(W(be));
+    "【保本價】賣多少才不虧\n"
+    + "  不含稅損平價 ＝ 合計要回收 ÷ (1 − 仲介費 "+p.brokerRate+"%)\n"
+    + "              ＝ "+n(totalBack)+" ÷ "+(1-p.brokerRate/100).toFixed(2)+"\n"
+    + "              ＝ "+n(totalBack/(1-p.brokerRate/100))+"\n"
+    + "  再把房地合一稅算進去 → 保本價 "+n(W(be))+"\n\n"
+    + "【免稅門檻】賣多少以下不用繳房地合一稅\n"
+    + "  可減除額 ＝ 取得成本 "+n(W(p.buyPrice))+"\n"
+    + "           ＋ 買入費用 "+n(W(p.buyFee))+"\n"
+    + "           ＋ 改良支出 "+n(improve)+"（裝修＋智慧家居）\n"
+    + "           ＝ "+n(taxBase)+"\n"
+    + "  門檻 ＝ 可減除額 ÷ (1 − 仲介費 "+p.brokerRate+"%) ＝ "+n(W(zt))+"\n\n"
+    + "※ 這兩個數字的可扣除項目不一樣，本來就不該相等：\n"
+    + "   保本用的「合計要回收」含開票成本、違約金、壽險信貸，\n"
+    + "   但這三項依法不能抵房地合一稅；\n"
+    + "   朋友補貼 "+n(W(p.friend))+" 只降真實投入，不降取得成本。";
   document.getElementById("t_payoff").textContent = w(p.payoff)+" 萬";
   document.getElementById("t_policy").textContent = w(p.insLoan)+" 萬";
   document.getElementById("t_both").textContent = w(p.payoff+p.insLoan)+" 萬";
