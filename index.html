@@ -95,6 +95,44 @@ summary:hover{color:var(--ink)}
 .chk .fail .m{color:var(--brick)}
 .chk .fail{color:var(--brick);font-weight:600}
 
+
+.chartwrap{overflow-x:auto}
+#chart{width:100%;min-width:640px;height:250px;display:block}
+.chartnote{font-size:13px;color:var(--ink2);margin-top:10px}
+.chartnote b{color:var(--ink)}
+
+/* 搬遷採購看板 */
+.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start}
+.ph{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:110px;transition:background .15s,border-color .15s}
+.ph.over{background:#F3EFE4;border-color:var(--mustard);border-style:dashed}
+.ph-h{display:flex;justify-content:space-between;align-items:baseline;padding:2px 4px 10px;border-bottom:1px dashed var(--line);margin-bottom:10px}
+.ph-t{font-size:13px;font-weight:800}
+.ph-t small{display:block;font-weight:500;color:var(--ink2);font-size:11px}
+.ph-s{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ph[data-p="0"] .ph-t{color:var(--brick)}
+.ph[data-p="1"] .ph-t{color:var(--mustard)}
+.ph[data-p="2"] .ph-t{color:var(--olive)}
+.ph[data-p="3"] .ph-t{color:var(--blue)}
+.it{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--cream);margin-bottom:7px;cursor:grab}
+.it:active{cursor:grabbing}
+.it.drag{opacity:.35}
+.it.off{opacity:.42}
+.it.off .nm{text-decoration:line-through}
+.it.locked{border-style:dashed;background:#F6F1E6}
+.it .cb{flex:none;width:17px;height:17px;margin-top:2px;accent-color:var(--brick);cursor:pointer}
+.it .bd{flex:1;min-width:0}
+.nm{font-size:13px;font-weight:700;line-height:1.35}
+.mt{display:inline-block;font-size:10px;padding:1px 5px;border-radius:4px;margin-top:3px;font-weight:700}
+.mt.take{background:#E9EFE2;color:#4B5A38}
+.mt.leave{background:#FBE7E1;color:#A5432C}
+.mt.part{background:#FAF0DA;color:#8A6417}
+.amt input{width:70px;border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:3px 5px;
+ font:inherit;font-size:12px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.mv{display:flex;gap:3px;margin-top:5px}
+.mv button{border:1px solid var(--line);background:var(--paper);border-radius:5px;font-size:10px;padding:1px 6px;cursor:pointer;color:var(--ink2);font-weight:700}
+.mv button:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+@media (max-width:900px){.phases{grid-template-columns:1fr 1fr}}
+@media (max-width:540px){.phases{grid-template-columns:1fr}}
 .bar{position:fixed;right:16px;bottom:16px;display:flex;gap:7px;z-index:30}
 .bar button{padding:8px 13px;border:1px solid var(--line);border-radius:9px;background:var(--paper);
 font:inherit;font-size:12.5px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -118,7 +156,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <nav>
  <a href="#s1">結論</a><a href="#s2">賣三重</a><a href="#s3">保本價</a>
- <a href="#s4">買下一間</a><a href="#s4b">搬遷採購</a><a href="#s4c">已含在別處</a><a href="#s5">每月剩多少</a><a href="#s6">還媽媽</a>
+ <a href="#s4">買下一間</a><a href="#s4b">搬遷採購</a><a href="#s4c">已含在別處</a><a href="#sc">現金曲線</a><a href="#s5">每月剩多少</a><a href="#s6">還媽媽</a>
  <a href="#s7">風險</a><a href="#s8">硬規則</a><a href="#s9">問三個人</a>
  <a href="#s10">看物件速算</a><a href="#s11">來源</a>
 </nav>
@@ -211,15 +249,11 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <section id="s4b">
  <h2 class="m">五、搬遷與採購那 47.2 萬是什麼</h2>
- <div class="card"><table id="movingTbl"></table></div>
- <div class="note" id="mvNote"></div>
- <details>
-  <summary>▸ 改搬遷採購的數字</summary>
-  <div class="card" style="margin-top:8px">
-   <div class="grid" id="movingEdit"></div>
-   <div class="src" style="margin-top:9px">改任一項，上面表格、第四節資金表、第七節壓力測試都會跟著重算。</div>
-  </div>
- </details>
+ <div class="src" style="margin-top:0;margin-bottom:10px">
+ 每張卡片可以<b>拖到別的階段</b>，或按卡片上的 0／1／2／3 直接移動。
+ 取消勾選＝這筆不買。金額直接改。虛線框的是搬遷固定費，不能取消。</div>
+ <div class="phases" id="phases"></div>
+ <div class="note" id="mvNote" style="margin-top:14px"></div>
 </section>
 
 <section id="s4c">
@@ -228,9 +262,9 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
   <table>
    <thead><tr><th>項目</th><th>在哪裡算</th></tr></thead>
    <tbody>
-    <tr><td>裝修期的房貸利息</td><td style="text-align:left">第七節「裝修期月結餘」已逐月扣掉，<b>不另列空窗期利息</b>（妳 xlsx 因為是單筆投報算法才要另列，這裡逐月走時間軸，重複列會多算一次）</td></tr>
+    <tr><td>裝修期的房貸利息</td><td style="text-align:left">第八節「裝修期月結餘」已逐月扣掉，<b>不另列空窗期利息</b>（妳 xlsx 因為是單筆投報算法才要另列，這裡逐月走時間軸，重複列會多算一次）</td></tr>
     <tr><td>仲介費・契稅・代書・規費<br>履保・火險・設定</td><td style="text-align:left">第四節「買房交易成本 2.5%」一口價涵蓋</td></tr>
-    <tr><td>自己住的房租</td><td style="text-align:left">第七節每月扣 29,000；第一個月的押金與首月租金另在搬遷採購裡</td></tr>
+    <tr><td>自己住的房租</td><td style="text-align:left">第八節每月扣 29,000；第一個月的押金與首月租金另在搬遷採購裡</td></tr>
     <tr><td>裝修超支的緩衝</td><td style="text-align:left">第四節「裝修工程含 15% 緩衝」已含</td></tr>
    </tbody>
   </table>
@@ -256,8 +290,27 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
  <span style="color:var(--ink2)">vault 舊筆記裡那條「小吳哥顧問費實收金額待問」已經有答案，我一併更新了。</span></div>
 </section>
 
+<section id="sc">
+ <h2 class="b">七、現金曲線：會不會中途斷炊</h2>
+ <div class="card chartwrap"><svg id="chart" viewBox="0 0 960 250" preserveAspectRatio="xMidYMid meet"></svg></div>
+ <div class="chartnote" id="chartNote"></div>
+ <details>
+  <summary>▸ 改時間安排</summary>
+  <div class="card" style="margin-top:8px">
+   <div class="grid">
+    <div class="fld"><label>賣房交屋</label><input type="number" id="p_sellM" step="1"><span class="u">搬家後第幾月</span></div>
+    <div class="fld"><label>新屋交屋延後</label><input type="number" id="p_buyLag" step="1"><span class="u">月</span></div>
+    <div class="fld"><label>裝修期</label><input type="number" id="p_renoM" step="1"><span class="u">月</span></div>
+    <div class="fld"><label>裝修後空租</label><input type="number" id="p_vacancy" step="1"><span class="u">月</span></div>
+    <div class="fld"><label>媽媽的錢何時到</label><input type="number" id="p_momM" step="1"><span class="u">第幾月</span></div>
+   </div>
+   <div class="src" style="margin-top:9px">裝修款依合約分五期付：簽約 10%、拆除 20%、泥作 30%、油漆 30%、驗收 10%。</div>
+  </div>
+ </details>
+</section>
+
 <section id="s5">
- <h2 class="o">七、收租後每個月剩多少</h2>
+ <h2 class="o">八、收租後每個月剩多少</h2>
  <div class="card"><table id="cfTbl"></table></div>
  <div class="note" id="graceNote"></div>
  <details>
@@ -280,12 +333,12 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 </section>
 
 <section id="s6">
- <h2 class="m">八、媽媽那筆錢怎麼還</h2>
+ <h2 class="m">九、媽媽那筆錢怎麼還</h2>
  <div class="card"><pre id="momPre"></pre></div>
 </section>
 
 <section id="s7">
- <h2 class="b">九、最大的兩個風險</h2>
+ <h2 class="b">十、最大的兩個風險</h2>
  <div class="note red"><b>① 銀行只核 7 成</b>
  <span id="t_risk1">—</span><br>
  <b class="inl">成數不足這件事，賣屋賣得好救不回來</b>，只能事前問銀行。
@@ -306,7 +359,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 </section>
 
 <section id="s8">
- <h2 class="o">十、三條硬規則</h2>
+ <h2 class="o">十一、三條硬規則</h2>
  <div class="note red"><b>① 必須先賣後買</b>
  同時持有兩戶的那一刻，成數掉到 5 成且不得有寬限期。<b class="inl">舊屋交屋前不要下斡旋。</b></div>
  <div class="note red"><b>② 必須夫妻共同借款</b>
@@ -317,7 +370,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 </section>
 
 <section id="s9">
- <h2>十一、看到物件要問的三個人</h2>
+ <h2>十二、看到物件要問的三個人</h2>
  <div class="card">
   <pre>銀行（同一物件跑三家，估價可差 5〜10%）
   我是首購，登記自住但會申請公益出租人，
@@ -338,7 +391,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 </section>
 
 <section id="s10">
- <h2 class="m">十二、看到物件，能不能下斡</h2>
+ <h2 class="m">十三、看到物件，能不能下斡</h2>
  <div id="verdict" class="verdict ok">
   <div class="vb">—</div><div class="chk"></div>
  </div>
@@ -385,7 +438,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 </section>
 
 <section id="s11">
- <h2 class="b">十三、這份取代了哪些東西</h2>
+ <h2 class="b">十四、這份取代了哪些東西</h2>
  <div class="card">
   <table>
    <thead><tr><th>原本在哪</th><th>算什麼</th><th>在這份的第幾節</th></tr></thead>
@@ -419,7 +472,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <script>
 var CASES = [{"sheet": "案件", "addr": "新北市蘆洲區復興路290巷6弄4號5樓", "ping": 32.597, "type": "公寓+RC頂", "age": 78.0, "price": 1050.0, "appr": 1171.333333, "apprAvg": 1171.333333, "rentTotal": 5.2, "roi": 0.09719750746, "yield": 0.04615011409, "cashflow": 3.338, "banks": [{"name": "中國信託", "appr": 1220.0}, {"name": "富邦銀行", "appr": 1144.0}, {"name": "台中商銀", "appr": 1150.0}], "loan1": 840, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "cost": {"A.頭期款": 110, "B.仲介費": 21, "C.介紹費": 11.71333333, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.896, "G.裝潢成本": 180, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0, "自備現金": 412.1093333}, "renov": 180}, {"sheet": "四川路", "addr": "新北市板橋區四川路二段130巷25弄15號4樓", "ping": 27.3, "type": "公寓+鐵皮頂", "age": 64.0, "price": 880.0, "appr": 1030, "apprAvg": 1030, "rentTotal": 7.7, "roi": 0.1201036866, "yield": 0.07026231263, "cashflow": 6.116, "banks": [{"name": "中國信託", "appr": 990.0}, {"name": "富邦銀行", "appr": 1100.0}, {"name": "台中商銀", "appr": 1000.0}], "loan1": 704, "rate1": 0.027, "loan2": 0.0, "rate2": 0.0399, "rents": [2.6, 2.6, 2.5, 0.0], "cost": {"A.頭期款": 176, "B.仲介費": 17.6, "C.介紹費": 10.3, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.672, "G.裝潢成本": 270, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 100.0, "自備現金": 611.072}, "renov": 270}, {"sheet": "復興路", "addr": "新北市蘆洲區復興路290巷6弄4號5樓", "ping": 32.597, "type": "公寓+RC頂", "age": 78.0, "price": 915.0, "appr": 1182, "apprAvg": 1182, "rentTotal": 7.5, "roi": 0.1224594364, "yield": 0.06831119545, "cashflow": 5.975, "banks": [{"name": "中國信託", "appr": 1220.0}, {"name": "富邦銀行", "appr": 1144.0}], "loan1": 732, "rate1": 0.025, "loan2": 0.0, "rate2": 0.0399, "rents": [2.5, 2.5, 2.5], "cost": {"A.頭期款": 183, "B.仲介費": 18.3, "C.介紹費": 10.0, "D.交易規費": 6.0, "F.空窗期利息(8個月)": 12.2, "G.裝潢成本": 240, "H.室內裝修許可申請": 16.0, "H.專案顧問費": 100.0, "自備現金": 585.5}, "renov": 240}, {"sheet": "雙城街", "addr": "台北市中山區雙城街16之3號2樓", "ping": 26.02, "type": "公寓", "age": 53.0, "price": 2300.0, "appr": 2027.5, "apprAvg": 2027.5, "rentTotal": 10, "roi": 0.09158415842, "yield": 0.04531722054, "cashflow": 6.166666667, "banks": [{"name": "中國信託", "appr": 2088.0}, {"name": "富邦銀行", "appr": 1967.0}], "loan1": 1840, "rate1": 0.025, "loan2": 0.0, "rate2": 0.0399, "rents": [2.5, 2.5, 2.5, 2.5], "cost": {"A.頭期款": 460, "B.仲介費": 46, "C.交易規費": 6.0, "D.裝潢成本": 280.0, "E.室內裝修許可申請": 16.0, "自備現金": 808}, "renov": 280}, {"sheet": "中興街", "addr": "新北市蘆洲區中興街130巷27號4樓頂", "ping": 24.5, "type": "公寓", "age": 45.0, "price": 1000.0, "appr": 910, "apprAvg": 910, "rentTotal": 5.2, "roi": 0.08938372618, "yield": 0.04595285904, "cashflow": 3.410833333, "banks": [{"name": "中國信託", "appr": 850.0}, {"name": "富邦銀行", "appr": 980.0}, {"name": "台中商銀", "appr": 900.0}], "loan1": 800, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "costTotal": 457.9133333, "cost": {"A.頭期款": 100, "B.仲介費": 20, "C.介紹費": 9.1, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.31333333, "G.裝潢成本": 240, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 240}, {"sheet": "五華街", "addr": "新北市三重區五華街71巷108號4樓", "ping": 23.595, "type": "公寓", "age": 48.0, "price": 880.0, "appr": 950.0, "apprAvg": 1150, "rentTotal": 5.2, "roi": 0.1161291925, "yield": 0.05312831555, "cashflow": 3.585633333, "banks": [{"name": "中國信託", "appr": 1150.0}, {"name": "富邦銀行", "appr": 1150.0}, {"name": "台中商銀", "appr": 1150.0}], "loan1": 704, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "costTotal": 370.5149333, "cost": {"A.頭期款": 76, "B.仲介費": 17.6, "C.介紹費": 9.5, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.91493333, "G.裝潢成本": 180, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 180}, {"sheet": "「五華街」的副本", "addr": "新北市三重區五華街71巷108號4樓", "ping": 23.595, "type": "公寓", "age": 48.0, "price": 880.0, "appr": 950.0, "apprAvg": 966.6666667, "rentTotal": 8, "roi": 0.1681480996, "yield": 0.07620771768, "cashflow": 6.385633333, "banks": [{"name": "中國信託", "appr": 950.0}, {"name": "富邦銀行", "appr": 1000.0}, {"name": "台中商銀", "appr": 950.0}], "loan1": 704, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.5, 2.5, 3.0, 0.0], "costTotal": 455.7149333, "cost": {"A.頭期款": 76, "B.仲介費": 8.8, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.91493333, "G.裝潢成本": 300, "H.專案顧問費": 50.0}, "renov": 300}, {"sheet": "自強路", "addr": "新北市三重區自強路一段320號2.3.4樓", "ping": 25.13, "type": "公寓", "age": 45.0, "price": 1000.0, "appr": 910, "apprAvg": 910, "rentTotal": 6.8, "roi": 0.1161005059, "yield": 0.05754935657, "cashflow": 5.010833333, "banks": [{"name": "中國信託", "appr": 850.0}, {"name": "富邦銀行", "appr": 980.0}, {"name": "台中商銀", "appr": 900.0}], "loan1": 800, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [1.7, 1.7, 1.7, 1.7], "costTotal": 517.9133333, "cost": {"A.頭期款": 100, "B.仲介費": 20, "C.介紹費": 9.1, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.31333333, "G.裝潢成本": 300, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 300}];
-var KEY = "fang-one-v4";
+var KEY = "fang-one-v5";
 
 var DEF = {
   // 賣三重
@@ -430,6 +483,7 @@ var DEF = {
   mom:129, cash:90, cashW:20,
   // 月收支
   income:125000, rent:75000, netr:82, myRent:29000, oldLoan:14800, credit:20000,
+  sellM:3, buyLag:2, renoM:8, vacancy:0, momM:0,
   living:64500, newRate:2.8, grace:3, term:30,
   // 看物件速算
   addr:"", oPrice:950, oAge:48,
@@ -466,7 +520,7 @@ var PHASE = ["搬家當月","第 1 個月","第 3 個月","開始收租後"];
 var MTAG = {take:"帶得走", part:"部分帶得走", leave:"帶不走"};
 
 DEF.mv = {};
-MOVING.forEach(function(x){ DEF.mv[x.id] = x.c; });
+MOVING.forEach(function(x,i){ DEF.mv[x.id] = {c:x.c, ph:x.ph, on:1, o:i}; });
 
 var p = JSON.parse(JSON.stringify(DEF));
 
@@ -508,11 +562,30 @@ function zeroTax(){
 }
 
 /* ── 搬遷與採購 ── */
-function mvVal(id){ var v=p.mv&&p.mv[id]; return (typeof v==="number"&&isFinite(v))?v:0; }
+function mvRec(id){
+  var r = p.mv && p.mv[id];
+  if(!r || typeof r!=="object"){
+    var d = null;
+    for(var i=0;i<MOVING.length;i++) if(MOVING[i].id===id) d=MOVING[i];
+    r = {c:(typeof r==="number"?r:(d?d.c:0)), ph:(d?d.ph:0), on:1, o:0};
+    if(!p.mv) p.mv={};
+    p.mv[id]=r;
+  }
+  return r;
+}
+function mvVal(id){ var r=mvRec(id); return (r.on && isFinite(r.c)) ? r.c : 0; }
+function mvPh(id){ return mvRec(id).ph; }
 function movingTotal(){ return MOVING.reduce(function(a,x){return a+mvVal(x.id);},0); }
 function movingMust(){ return MOVING.reduce(function(a,x){return a+(x.must?mvVal(x.id):0);},0); }
 function movingFurn(){ return MOVING.reduce(function(a,x){return a+(x.must?0:mvVal(x.id));},0); }
-function movingPhase(ph){ return MOVING.reduce(function(a,x){return a+(x.ph===ph?mvVal(x.id):0);},0); }
+function movingPhase(ph){ return MOVING.reduce(function(a,x){return a+(mvPh(x.id)===ph?mvVal(x.id):0);},0); }
+function mvMove(id, ph){
+  var r=mvRec(id);
+  if(r.ph===ph) return;
+  r.ph=ph;
+  r.o = MOVING.reduce(function(a,x){ var q=mvRec(x.id); return (q.ph===ph&&q.o>a)?q.o:a; },0)+1;
+  render();
+}
 
 /* ── 買下一間 ── */
 function fund(){
@@ -546,6 +619,125 @@ function flows(){
     D: p.income + netRent + fixed - amort,
     graceEnd: Math.round(p.grace*12)+5
   };
+}
+
+/* ── 逐月時間軸模擬 ── */
+var HORIZON = 48;
+
+function timeline(){
+  var fl = flows();
+  var sellM = Math.max(0, Math.round(p.sellM));
+  var buyM  = sellM + Math.max(0, Math.round(p.buyLag));
+  var renoM = Math.max(0, Math.round(p.renoM));
+  var rentStart = buyM + renoM + Math.max(0, Math.round(p.vacancy||0));
+  var graceEnd = buyM + Math.round(p.grace*12);
+  return {fl:fl, sellM:sellM, buyM:buyM, renoM:renoM, rentStart:rentStart,
+          graceEnd:graceEnd, momM:Math.max(0,Math.round(p.momM))};
+}
+
+function loanPayAt(T, m){
+  if(m < T.buyM) return 0;
+  return (m < T.graceEnd) ? T.fl.graceP : T.fl.amort;
+}
+
+function simulate(){
+  var T = timeline(), f = fund();
+  var periods = T.rentStart - T.buyM;
+  var renoTotal = W(p.newReno)*(1+p.buffer/100);
+  // 裝修付款：簽約10 拆除20 泥作30 油漆30 驗收10
+  var SCHED = [[0,.10],[0.125,.20],[0.375,.30],[0.625,.30],[1.0,.10]];
+  var due = {};
+  SCHED.forEach(function(x){
+    var mm = T.buyM + Math.round(x[0]*periods);
+    due[mm] = (due[mm]||0) + renoTotal*x[1];
+  });
+
+  var cash = W(p.cash) + W(p.cashW), pts = [], m, inc, exp, spend, note;
+  for(m=0; m<=HORIZON; m++){
+    inc = p.income + (m>=T.rentStart ? T.fl.netRent : 0);
+    exp = p.myRent + p.living + p.credit
+        + (m < T.sellM ? p.oldLoan : 0)
+        + loanPayAt(T, m);
+
+    spend = 0; note = "";
+    for(var ph=0; ph<4; ph++){
+      var em = (ph===3) ? T.rentStart : [0,1,3][ph];
+      if(em === m) spend += movingPhase(ph);
+    }
+    if(m === T.rentStart) note = "開始收租";
+    if(m === T.sellM){ spend -= sellAt(p.salePrice).net; note = "舊屋交屋"; }
+    if(m === T.momM) spend -= W(p.mom);
+    if(m === T.buyM){
+      spend += f.down + f.buyCost + W(p.newIns) + W(p.referFee) + W(p.permit) + W(p.consult);
+      if(periods<=0) spend += renoTotal;
+      note = (note?note+"＋":"") + "新屋交屋";
+    }
+    if(periods>0 && due[m]) spend += due[m];
+
+    if(m>0) cash += (inc-exp);
+    cash -= spend;
+    pts.push({m:m, v:cash, net:inc-exp, note:note});
+  }
+  return {pts:pts, T:T};
+}
+
+function drawChart(){
+  var svg = document.getElementById("chart");
+  if(!svg) return null;
+  var S = simulate(), pts = S.pts, T = S.T;
+  var W_=960, H=250, PL=70, PR=16, PT=20, PB=30;
+  var vals = pts.map(function(x){return x.v;});
+  var hi = Math.max.apply(null, vals.concat([0]));
+  var lo = Math.min.apply(null, vals.concat([0]));
+  var pad = Math.max((hi-lo)*0.14, 30000); hi += pad; lo -= pad;
+  var N = pts.length;
+  function X(i){ return PL+(W_-PL-PR)*i/(N-1); }
+  function Y(v){ return PT+(H-PT-PB)*(hi-v)/((hi-lo)||1); }
+
+  var d = pts.map(function(x,i){ return (i?"L":"M")+X(i).toFixed(1)+" "+Y(x.v).toFixed(1); }).join(" ");
+  var area = d+" L"+X(N-1).toFixed(1)+" "+Y(0).toFixed(1)+" L"+X(0).toFixed(1)+" "+Y(0).toFixed(1)+" Z";
+  var zeroY = Y(0);
+
+  var minI=0, i;
+  for(i=1;i<pts.length;i++) if(pts[i].v<pts[minI].v) minI=i;
+  var crossI=-1;
+  if(pts[minI].v<0) for(i=minI;i<pts.length;i++) if(pts[i].v>=0){ crossI=i; break; }
+
+  var g = '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">'
+        + '<stop offset="0%" stop-color="#C4593F" stop-opacity=".15"/>'
+        + '<stop offset="100%" stop-color="#C4593F" stop-opacity="0"/></linearGradient></defs>';
+  g += '<path d="'+area+'" fill="url(#g)"/>';
+
+  [[T.sellM,"#D9A441","舊屋交屋"],[T.buyM,"#C4593F","新屋交屋"],
+   [T.rentStart,"#4A6B7A","開始收租"],[T.graceEnd,"#6A625A","寬限期滿"]]
+  .forEach(function(e){
+    if(e[0]<0||e[0]>HORIZON) return;
+    var x = X(e[0]).toFixed(1);
+    g += '<line x1="'+x+'" y1="'+PT+'" x2="'+x+'" y2="'+(H-PB)+'" stroke="'+e[1]
+       + '" stroke-width="1.2" stroke-dasharray="3 3" opacity=".75"/>'
+       + '<text x="'+x+'" y="'+(PT-5)+'" text-anchor="middle" font-size="10.5" font-weight="700" fill="'+e[1]+'">'+e[2]+'</text>';
+  });
+
+  g += '<line x1="'+PL+'" y1="'+zeroY.toFixed(1)+'" x2="'+(W_-PR)+'" y2="'+zeroY.toFixed(1)
+     + '" stroke="#2B2723" stroke-width="1.5" stroke-dasharray="4 4"/>'
+     + '<text x="'+(PL-8)+'" y="'+(zeroY+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#6A625A">0</text>'
+     + '<text x="'+(PL-8)+'" y="'+Y(hi-pad*0.6).toFixed(1)+'" text-anchor="end" font-size="10.5" fill="#6A625A">'+wan(hi-pad*0.6)+'</text>'
+     + '<text x="'+(PL-8)+'" y="'+Y(lo+pad*0.6).toFixed(1)+'" text-anchor="end" font-size="10.5" fill="#C4593F">'+wan(lo+pad*0.6)+'</text>'
+     + '<path d="'+d+'" fill="none" stroke="#C4593F" stroke-width="2.2" stroke-linejoin="round"/>';
+
+  g += '<circle cx="'+X(minI).toFixed(1)+'" cy="'+Y(pts[minI].v).toFixed(1)+'" r="5" fill="#C4593F" stroke="#FFFDF8" stroke-width="1.6"/>';
+  var ty = Y(pts[minI].v) + (Y(pts[minI].v)>H-PB-30 ? -12 : 18);
+  g += '<text x="'+X(minI).toFixed(1)+'" y="'+ty.toFixed(1)+'" text-anchor="middle" font-size="12" font-weight="800" fill="#C4593F">'+n(pts[minI].v)+'</text>';
+
+  if(crossI>0){
+    g += '<circle cx="'+X(crossI).toFixed(1)+'" cy="'+Y(pts[crossI].v).toFixed(1)+'" r="4.5" fill="#6B7A52" stroke="#FFFDF8" stroke-width="1.6"/>'
+       + '<text x="'+X(crossI).toFixed(1)+'" y="'+(Y(pts[crossI].v)-11).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#4B5A38">第 '+crossI+' 月轉正</text>';
+  }
+  for(i=0;i<=HORIZON;i+=6){
+    g += '<text x="'+X(i).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="10.5" fill="#6A625A">'+(i===0?"搬家":i+"月")+'</text>';
+  }
+  svg.innerHTML = g;
+  return {min:pts[minI], minI:minI, crossI:crossI};
 }
 
 /* ── 看物件速算 ── */
@@ -736,6 +928,18 @@ function render(){
   updateMovingNote();
   renderStress();
 
+  // 七、現金曲線
+  (function(){
+    var r = drawChart();
+    var el = document.getElementById("chartNote");
+    if(r && el){
+      el.innerHTML = r.min.v>=0
+        ? "整條路都不破底，最低點在<b>第 "+r.minI+" 個月</b>還有 <b>"+n(r.min.v)+"</b>。"
+        : "現金在<b>第 "+r.minI+" 個月</b>觸底，最深缺口 <b>"+n(-r.min.v)+"</b>（約 "+wan(-r.min.v)+"）。"
+          + (r.crossI>0 ? "第 "+r.crossI+" 個月才轉正。" : "48 個月內沒有轉正。");
+    }
+  })();
+
   // 十、看物件速算
   renderOffer(f.src/10000);
 
@@ -795,43 +999,105 @@ function updateMovingNote(){
    + "之後三階段各 "+wan(movingPhase(1))+"／"+wan(movingPhase(2))+"／"+wan(movingPhase(3))+"。";
 }
 
-function renderMoving(){
-  var html='<thead><tr><th>項目</th><th>金額</th><th>搬走時</th></tr></thead><tbody>';
-  for(var ph=0; ph<4; ph++){
-    var list = MOVING.filter(function(x){ return x.ph===ph; });
-    if(!list.length) continue;
-    html += "<tr class='sep'><th style='text-align:left'>"+PHASE[ph]+"</th><th></th>"
-          + "<th style='text-align:right'>小計 "+n(movingPhase(ph))+"</th></tr>";
-    list.forEach(function(x){
-      var v = mvVal(x.id);
-      html += "<tr"+(v===0?" style='opacity:.45'":"")+"><td>"+x.n
-            + (x.must?" <span style='font-size:11px;color:var(--brick)'>必付</span>":"")
-            + (x.note?"<br><span style='font-size:11.5px;color:var(--ink2)'>"+x.note+"</span>":"")
-            + "</td><td>"+n(v)+"</td><td style='font-size:12px;color:var(--ink2)'>"
-            + (MTAG[x.m]||"—")+"</td></tr>";
-    });
-  }
-  html += "<tr class='tot'><td>合計</td><td>"+n(movingTotal())+"</td><td></td></tr></tbody>";
-  document.getElementById("movingTbl").innerHTML = html;
-
-  // 編輯區（只建一次，之後只更新值）
-  var ed = document.getElementById("movingEdit");
-  if(!ed.dataset.built){
-    ed.innerHTML = MOVING.map(function(x){
-      return '<div class="fld"><label style="width:118px">'+x.n+'</label>'
-           + '<input type="number" step="1000" data-mv="'+x.id+'"><span class="u">元</span></div>';
-    }).join("");
-    ed.dataset.built = "1";
-    ed.querySelectorAll("input[data-mv]").forEach(function(el){
-      el.addEventListener("input", function(){
-        p.mv[el.dataset.mv] = +el.value||0;
-        render();
-      });
-    });
-  }
-  ed.querySelectorAll("input[data-mv]").forEach(function(el){
-    if(document.activeElement!==el) el.value = mvVal(el.dataset.mv);
+var SKIP_BOARD = false;
+function renderExceptBoard(){
+  SKIP_BOARD = true;
+  render();
+  SKIP_BOARD = false;
+  // 只更新各階段小計
+  document.querySelectorAll("#phases .ph").forEach(function(col){
+    var ph = +col.getAttribute("data-p");
+    var el = col.querySelector(".ph-s");
+    if(el) el.textContent = n(movingPhase(ph));
   });
+}
+
+function renderMoving(){
+  if(SKIP_BOARD) return;
+  var host = document.getElementById("phases");
+  if(!host) return;
+  host.innerHTML = "";
+  PHASE.forEach(function(name, ph){
+    var col = document.createElement("div");
+    col.className = "ph";
+    col.setAttribute("data-p", ph);
+    col.innerHTML = '<div class="ph-h"><div class="ph-t">階段 ' + ph
+      + '<small>' + name + '</small></div>'
+      + '<div class="ph-s">' + n(movingPhase(ph)) + '</div></div>';
+
+    MOVING.filter(function(x){ return mvPh(x.id)===ph; })
+      .sort(function(a,b){ return mvRec(a.id).o - mvRec(b.id).o; })
+      .forEach(function(x){ col.appendChild(mvCard(x)); });
+
+    col.addEventListener("dragover", function(e){ e.preventDefault(); col.classList.add("over"); });
+    col.addEventListener("dragleave", function(){ col.classList.remove("over"); });
+    col.addEventListener("drop", function(e){
+      e.preventDefault(); col.classList.remove("over");
+      mvMove(e.dataTransfer.getData("text/plain"), ph);
+    });
+    host.appendChild(col);
+  });
+}
+
+function mvCard(x){
+  var r = mvRec(x.id);
+  var el = document.createElement("div");
+  el.className = "it" + (r.on ? "" : " off") + (x.must ? " locked" : "");
+  el.draggable = true;
+
+  var cb = document.createElement("input");
+  cb.type = "checkbox"; cb.className = "cb";
+  cb.checked = !!r.on; cb.disabled = !!x.must;
+  cb.title = x.must ? "搬遷固定費，不能取消" : "取消＝這筆不買";
+  cb.addEventListener("change", function(){
+    mvRec(x.id).on = cb.checked ? 1 : 0;
+    el.classList.toggle("off", !cb.checked);
+    renderExceptBoard();
+  });
+
+  var bd = document.createElement("div");
+  bd.className = "bd";
+  var h = '<div class="nm">' + x.n + '</div>';
+  if(x.m==="take")  h += '<span class="mt take">帶得走</span>';
+  if(x.m==="leave") h += '<span class="mt leave">留在這</span>';
+  if(x.m==="part")  h += '<span class="mt part">看款式</span>';
+  if(x.note) h += '<div style="font-size:11px;color:var(--ink2);margin-top:2px">' + x.note + '</div>';
+  bd.innerHTML = h;
+
+  if(!x.must){
+    var mv = document.createElement("div");
+    mv.className = "mv";
+    [0,1,2,3].forEach(function(ph){
+      var btn = document.createElement("button");
+      btn.textContent = ph;
+      btn.title = "移到階段 " + ph + "　" + PHASE[ph];
+      if(ph === r.ph){ btn.style.background = "var(--ink)"; btn.style.color = "var(--paper)"; }
+      btn.addEventListener("click", function(){ mvMove(x.id, ph); });
+      mv.appendChild(btn);
+    });
+    bd.appendChild(mv);
+  }
+
+  var amt = document.createElement("div");
+  amt.className = "amt";
+  var inp = document.createElement("input");
+  inp.type = "number"; inp.step = "1000"; inp.value = r.c;
+  inp.setAttribute("aria-label", x.n + " 金額");
+  inp.addEventListener("input", function(){
+    var v = parseInt(inp.value, 10);
+    mvRec(x.id).c = isNaN(v) ? 0 : v;
+    renderExceptBoard();   // 不重建看板，避免輸入框失焦
+  });
+  amt.appendChild(inp);
+
+  el.appendChild(cb); el.appendChild(bd); el.appendChild(amt);
+  el.addEventListener("dragstart", function(e){
+    e.dataTransfer.setData("text/plain", x.id);
+    e.dataTransfer.effectAllowed = "move";
+    el.classList.add("drag");
+  });
+  el.addEventListener("dragend", function(){ el.classList.remove("drag"); });
+  return el;
 }
 
 function renderOffer(budgetWan){
