@@ -233,15 +233,6 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
  他另有一句可直接用：<b class="inl">「買房不買貴法：先找銀行估價，再向賣方出價」</b>——
  如果成交價跟銀行估價差不多甚至更低，代表沒買貴。</div>
 
- <div class="note red"><b>這裡有一筆 86 萬待確認，它決定買不買得起</b>
- 原本的換屋資金計畫把「瓊安帳上現金 90 萬」寫成<b class="inl">「86 萬信貸＋4 萬自有」</b>，
- 但這 86 萬在 vault 完全查不到出處：<br>
- · 若指<b class="inl">中信 87 萬轉貸</b>——妳 2026-09-03 已拍板<b class="inl">不借這筆</b>，那就不能算成資金來源<br>
- · 若指<b class="inl">既有信貸</b>——妳剩 25 萬、彣錩 28.6 萬，合計 53.6 萬，不是 86 萬；
- 而且既有信貸是已經在還的負債，撥款早就用掉了，不會躺在帳上當頭期款<br>
- <b class="inl">把這 86 萬拿掉，餘裕從 +31.9 萬變成缺口 −54.1 萬</b>。
- 上面「瓊安帳上現金」欄位可以直接改成實際數字試看看。</div>
-
  <details>
   <summary>▸ 改買屋的數字</summary>
   <div class="card" style="margin-top:8px">
@@ -348,7 +339,9 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div class="fld"><label>淨租率</label><input type="number" id="p_netr" step="1"><span class="u">%</span></div>
     <div class="fld"><label>自己住的房租</label><input type="number" id="p_myRent" step="1000"><span class="u">元</span></div>
     <div class="fld"><label>舊屋房貸</label><input type="number" id="p_oldLoan" step="100"><span class="u">元</span></div>
-    <div class="fld"><label>信貸（兩人）</label><input type="number" id="p_credit" step="1000"><span class="u">元</span></div>
+    <div class="fld"><label>信貸（兩人）</label><input type="number" id="p_credit" step="1000"><span class="u">元／月</span></div>
+    <div class="fld"><label>信貸跳增後</label><input type="number" id="p_creditAfter" step="1000"><span class="u">元／月</span></div>
+    <div class="fld"><label>跳增在第幾月</label><input type="number" id="p_creditJumpM" step="1"><span class="u">月</span></div>
     <div class="fld"><label>生活費貓水電</label><input type="number" id="p_living" step="1000"><span class="u">元</span></div>
     <div class="fld"><label>新房貸利率</label><input type="number" id="p_newRate" step="0.05"><span class="u">%</span></div>
     <div class="fld"><label>寬限期</label><input type="number" id="p_grace" step="1"><span class="u">年</span></div>
@@ -498,7 +491,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <script>
 var CASES = [{"sheet": "案件", "addr": "新北市蘆洲區復興路290巷6弄4號5樓", "ping": 32.597, "type": "公寓+RC頂", "age": 78.0, "price": 1050.0, "appr": 1171.333333, "apprAvg": 1171.333333, "rentTotal": 5.2, "roi": 0.09719750746, "yield": 0.04615011409, "cashflow": 3.338, "banks": [{"name": "中國信託", "appr": 1220.0}, {"name": "富邦銀行", "appr": 1144.0}, {"name": "台中商銀", "appr": 1150.0}], "loan1": 840, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "cost": {"A.頭期款": 110, "B.仲介費": 21, "C.介紹費": 11.71333333, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.896, "G.裝潢成本": 180, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0, "自備現金": 412.1093333}, "renov": 180}, {"sheet": "四川路", "addr": "新北市板橋區四川路二段130巷25弄15號4樓", "ping": 27.3, "type": "公寓+鐵皮頂", "age": 64.0, "price": 880.0, "appr": 1030, "apprAvg": 1030, "rentTotal": 7.7, "roi": 0.1201036866, "yield": 0.07026231263, "cashflow": 6.116, "banks": [{"name": "中國信託", "appr": 990.0}, {"name": "富邦銀行", "appr": 1100.0}, {"name": "台中商銀", "appr": 1000.0}], "loan1": 704, "rate1": 0.027, "loan2": 0.0, "rate2": 0.0399, "rents": [2.6, 2.6, 2.5, 0.0], "cost": {"A.頭期款": 176, "B.仲介費": 17.6, "C.介紹費": 10.3, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.672, "G.裝潢成本": 270, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 100.0, "自備現金": 611.072}, "renov": 270}, {"sheet": "復興路", "addr": "新北市蘆洲區復興路290巷6弄4號5樓", "ping": 32.597, "type": "公寓+RC頂", "age": 78.0, "price": 915.0, "appr": 1182, "apprAvg": 1182, "rentTotal": 7.5, "roi": 0.1224594364, "yield": 0.06831119545, "cashflow": 5.975, "banks": [{"name": "中國信託", "appr": 1220.0}, {"name": "富邦銀行", "appr": 1144.0}], "loan1": 732, "rate1": 0.025, "loan2": 0.0, "rate2": 0.0399, "rents": [2.5, 2.5, 2.5], "cost": {"A.頭期款": 183, "B.仲介費": 18.3, "C.介紹費": 10.0, "D.交易規費": 6.0, "F.空窗期利息(8個月)": 12.2, "G.裝潢成本": 240, "H.室內裝修許可申請": 16.0, "H.專案顧問費": 100.0, "自備現金": 585.5}, "renov": 240}, {"sheet": "雙城街", "addr": "台北市中山區雙城街16之3號2樓", "ping": 26.02, "type": "公寓", "age": 53.0, "price": 2300.0, "appr": 2027.5, "apprAvg": 2027.5, "rentTotal": 10, "roi": 0.09158415842, "yield": 0.04531722054, "cashflow": 6.166666667, "banks": [{"name": "中國信託", "appr": 2088.0}, {"name": "富邦銀行", "appr": 1967.0}], "loan1": 1840, "rate1": 0.025, "loan2": 0.0, "rate2": 0.0399, "rents": [2.5, 2.5, 2.5, 2.5], "cost": {"A.頭期款": 460, "B.仲介費": 46, "C.交易規費": 6.0, "D.裝潢成本": 280.0, "E.室內裝修許可申請": 16.0, "自備現金": 808}, "renov": 280}, {"sheet": "中興街", "addr": "新北市蘆洲區中興街130巷27號4樓頂", "ping": 24.5, "type": "公寓", "age": 45.0, "price": 1000.0, "appr": 910, "apprAvg": 910, "rentTotal": 5.2, "roi": 0.08938372618, "yield": 0.04595285904, "cashflow": 3.410833333, "banks": [{"name": "中國信託", "appr": 850.0}, {"name": "富邦銀行", "appr": 980.0}, {"name": "台中商銀", "appr": 900.0}], "loan1": 800, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "costTotal": 457.9133333, "cost": {"A.頭期款": 100, "B.仲介費": 20, "C.介紹費": 9.1, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.31333333, "G.裝潢成本": 240, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 240}, {"sheet": "五華街", "addr": "新北市三重區五華街71巷108號4樓", "ping": 23.595, "type": "公寓", "age": 48.0, "price": 880.0, "appr": 950.0, "apprAvg": 1150, "rentTotal": 5.2, "roi": 0.1161291925, "yield": 0.05312831555, "cashflow": 3.585633333, "banks": [{"name": "中國信託", "appr": 1150.0}, {"name": "富邦銀行", "appr": 1150.0}, {"name": "台中商銀", "appr": 1150.0}], "loan1": 704, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.6, 2.6, 0.0, 0.0], "costTotal": 370.5149333, "cost": {"A.頭期款": 76, "B.仲介費": 17.6, "C.介紹費": 9.5, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.91493333, "G.裝潢成本": 180, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 180}, {"sheet": "「五華街」的副本", "addr": "新北市三重區五華街71巷108號4樓", "ping": 23.595, "type": "公寓", "age": 48.0, "price": 880.0, "appr": 950.0, "apprAvg": 966.6666667, "rentTotal": 8, "roi": 0.1681480996, "yield": 0.07620771768, "cashflow": 6.385633333, "banks": [{"name": "中國信託", "appr": 950.0}, {"name": "富邦銀行", "appr": 1000.0}, {"name": "台中商銀", "appr": 950.0}], "loan1": 704, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [2.5, 2.5, 3.0, 0.0], "costTotal": 455.7149333, "cost": {"A.頭期款": 76, "B.仲介費": 8.8, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 12.91493333, "G.裝潢成本": 300, "H.專案顧問費": 50.0}, "renov": 300}, {"sheet": "自強路", "addr": "新北市三重區自強路一段320號2.3.4樓", "ping": 25.13, "type": "公寓", "age": 45.0, "price": 1000.0, "appr": 910, "apprAvg": 910, "rentTotal": 6.8, "roi": 0.1161005059, "yield": 0.05754935657, "cashflow": 5.010833333, "banks": [{"name": "中國信託", "appr": 850.0}, {"name": "富邦銀行", "appr": 980.0}, {"name": "台中商銀", "appr": 900.0}], "loan1": 800, "rate1": 0.02185, "loan2": 100.0, "rate2": 0.0399, "rents": [1.7, 1.7, 1.7, 1.7], "costTotal": 517.9133333, "cost": {"A.頭期款": 100, "B.仲介費": 20, "C.介紹費": 9.1, "D.交易規費": 8.0, "F.空窗期利息(8個月)": 14.31333333, "G.裝潢成本": 300, "H.室內裝修許可申請": 16.5, "H.專案顧問費": 50.0}, "renov": 300}];
-var KEY = "fang-one-v6";
+var KEY = "fang-one-v7";
 
 var DEF = {
   // 賣三重
@@ -511,6 +504,7 @@ var DEF = {
   income:125000, rent:75000, netr:82, myRent:29000, oldLoan:14800, credit:20000,
   sellM:3, buyLag:2, renoM:8, vacancy:0, momM:0,
   living:64500, newRate:2.8, grace:3, term:30,
+  creditJumpM:25, creditAfter:24317,
   // 看物件速算
   addr:"", oPrice:950, oAge:48,
   banks:[{name:"中國信託",appr:0},{name:"富邦銀行",appr:0},{name:"台中商銀",appr:0}],
@@ -640,13 +634,17 @@ function flows(){
   var graceP = loan1*mr + pay2;
   var amort = (mr>0 ? loan1*mr/(1-Math.pow(1+mr,-nm)) : loan1/nm) + pay2;
   var netRent = p.rent*(p.netr/100);
+  var creditLate = +p.creditAfter || p.credit;
   var fixed = -p.myRent - p.credit - p.living;
+  var fixedLate = -p.myRent - creditLate - p.living;
   return {
     graceP:graceP, amort:amort, netRent:netRent, jump:amort-graceP,
     A: p.income + fixed - p.oldLoan,
     B: p.income + fixed - graceP,
     C: p.income + netRent + fixed - graceP,
-    D: p.income + netRent + fixed - amort,
+    C2: p.income + netRent + fixedLate - graceP,
+    D: p.income + netRent + fixedLate - amort,
+    creditLate: creditLate, creditJump: creditLate - p.credit,
     graceEnd: Math.round(p.grace*12)+5
   };
 }
@@ -687,7 +685,8 @@ function simulate(){
   var cash = W(p.cash) + W(p.cashW), pts = [], m, inc, exp, spend, note;
   for(m=0; m<=HORIZON; m++){
     inc = p.income + (m>=T.rentStart ? T.fl.netRent : 0);
-    exp = p.myRent + p.living + p.credit
+    exp = p.myRent + p.living
+        + (m >= p.creditJumpM ? (+p.creditAfter||p.credit) : p.credit)
         + (m < T.sellM ? p.oldLoan : 0)
         + loanPayAt(T, m);
 
@@ -919,7 +918,7 @@ function render(){
     + "<tr class='sep'><th style='text-align:left'>資金來源</th><th></th></tr>"
     + "<tr><td>賣三重淨到手（成交 "+w(p.salePrice,0)+" 萬）</td><td class='pos'>"+n(f.sellNet)+"</td></tr>"
     + "<tr><td>媽媽借款</td><td class='pos'>"+n(W(p.mom))+"</td></tr>"
-    + "<tr><td>瓊安帳上現金<br><span style='font-size:11.5px;color:var(--brick)'>⚠️ 原寫「86 萬信貸＋4 萬自有」，這 86 萬待確認</span></td><td class='pos'>"+n(W(p.cash))+"</td></tr>"
+    + "<tr><td>瓊安帳上現金<br><span style='font-size:11.5px;color:var(--ink2)'>中信信貸 87 萬扣 1 萬手續費實拿 86 萬＋4 萬自有</span></td><td class='pos'>"+n(W(p.cash))+"</td></tr>"
     + "<tr><td>彣錩手上現金</td><td class='pos'>"+n(W(p.cashW))+"</td></tr>"
     + "<tr class='tot'><td>來源合計</td><td class='pos'>"+n(f.src)+"</td></tr>"
     + "<tr class='tot'><td>"+(f.gap>=0?"餘裕":"缺口")+"</td><td class='"+(f.gap>=0?"pos":"neg")+"'>"
@@ -928,16 +927,17 @@ function render(){
   // 五、月現金流
   var fl = flows();
   function c(v){ return "<td class='"+(v>=0?"pos":"neg")+"'>"+(v>=0?"+":"−")+n(Math.abs(v))+"</td>"; }
+  var T2 = timeline();
   document.getElementById("cfTbl").innerHTML =
-    "<thead><tr><th>項目</th><th>賣房前</th><th>裝修期</th><th>收租後</th><th>寬限期滿</th></tr></thead><tbody>"
-    + "<tr><td>兩人月收入</td><td>"+n(p.income)+"</td><td>"+n(p.income)+"</td><td>"+n(p.income)+"</td><td>"+n(p.income)+"</td></tr>"
-    + "<tr><td>淨租金（"+n(p.rent)+" × "+p.netr+"%）</td><td>—</td><td>—</td><td class='pos'>"+n(fl.netRent)+"</td><td class='pos'>"+n(fl.netRent)+"</td></tr>"
-    + "<tr><td>自己住的房租</td><td class='neg'>−"+n(p.myRent)+"</td><td class='neg'>−"+n(p.myRent)+"</td><td class='neg'>−"+n(p.myRent)+"</td><td class='neg'>−"+n(p.myRent)+"</td></tr>"
-    + "<tr><td>舊屋房貸</td><td class='neg'>−"+n(p.oldLoan)+"</td><td>—</td><td>—</td><td>—</td></tr>"
-    + "<tr><td>新房貸</td><td>—</td><td class='neg'>−"+n(fl.graceP)+"</td><td class='neg'>−"+n(fl.graceP)+"</td><td class='neg'>−"+n(fl.amort)+"</td></tr>"
-    + "<tr><td>信貸（兩人）</td><td class='neg'>−"+n(p.credit)+"</td><td class='neg'>−"+n(p.credit)+"</td><td class='neg'>−"+n(p.credit)+"</td><td class='neg'>−"+n(p.credit)+"</td></tr>"
-    + "<tr><td>生活費・貓・水電</td><td class='neg'>−"+n(p.living)+"</td><td class='neg'>−"+n(p.living)+"</td><td class='neg'>−"+n(p.living)+"</td><td class='neg'>−"+n(p.living)+"</td></tr>"
-    + "<tr class='tot'><td>月結餘</td>"+c(fl.A)+c(fl.B)+c(fl.C)+c(fl.D)+"</tr></tbody>";
+    "<thead><tr><th>項目</th><th>賣房前</th><th>裝修期</th><th>收租後<small style='display:block;font-weight:500'>第 "+T2.rentStart+"〜"+(p.creditJumpM-1)+" 月</small></th><th>信貸跳增後<small style='display:block;font-weight:500'>第 "+p.creditJumpM+" 月起</small></th><th>寬限期滿<small style='display:block;font-weight:500'>第 "+(T2.buyM+Math.round(p.grace*12))+" 月起</small></th></tr></thead><tbody>"
+    + "<tr><td>兩人月收入</td><td>"+n(p.income)+"</td><td>"+n(p.income)+"</td><td>"+n(p.income)+"</td><td>"+n(p.income)+"</td><td>"+n(p.income)+"</td></tr>"
+    + "<tr><td>淨租金（"+n(p.rent)+" × "+p.netr+"%）</td><td>—</td><td>—</td><td class='pos'>"+n(fl.netRent)+"</td><td class='pos'>"+n(fl.netRent)+"</td><td class='pos'>"+n(fl.netRent)+"</td></tr>"
+    + "<tr><td>自己住的房租</td><td class='neg'>−"+n(p.myRent)+"</td><td class='neg'>−"+n(p.myRent)+"</td><td class='neg'>−"+n(p.myRent)+"</td><td class='neg'>−"+n(p.myRent)+"</td><td class='neg'>−"+n(p.myRent)+"</td></tr>"
+    + "<tr><td>舊屋房貸</td><td class='neg'>−"+n(p.oldLoan)+"</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>"
+    + "<tr><td>新房貸</td><td>—</td><td class='neg'>−"+n(fl.graceP)+"</td><td class='neg'>−"+n(fl.graceP)+"</td><td class='neg'>−"+n(fl.graceP)+"</td><td class='neg'>−"+n(fl.amort)+"</td></tr>"
+    + "<tr><td>信貸（兩人）"+(fl.creditJump>0?"<br><span style='font-size:11.5px;color:var(--brick)'>中信 87 萬：前兩年月繳 9,700，第 "+p.creditJumpM+" 月起 14,317</span>":"")+"</td><td class='neg'>−"+n(p.credit)+"</td><td class='neg'>−"+n(p.credit)+"</td><td class='neg'>−"+n(p.credit)+"</td><td class='neg'>−"+n(fl.creditLate)+"</td><td class='neg'>−"+n(fl.creditLate)+"</td></tr>"
+    + "<tr><td>生活費・貓・水電</td><td class='neg'>−"+n(p.living)+"</td><td class='neg'>−"+n(p.living)+"</td><td class='neg'>−"+n(p.living)+"</td><td class='neg'>−"+n(p.living)+"</td><td class='neg'>−"+n(p.living)+"</td></tr>"
+    + "<tr class='tot'><td>月結餘</td>"+c(fl.A)+c(fl.B)+c(fl.C)+c(fl.C2)+c(fl.D)+"</tr></tbody>";
   document.getElementById("graceNote").innerHTML =
     "<b>第 "+Math.round(p.grace*12+5)+" 個月寬限期滿，月付會跳增 "+n(fl.jump)+"</b>"
     + "寬限期內本金一毛沒還，期滿要用 "+(p.term-p.grace)+" 年還完 "+p.term+" 年的本金。"
