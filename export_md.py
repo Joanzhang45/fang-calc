@@ -323,6 +323,22 @@ def main():
     today = datetime.date.today().isoformat()
     body = build_md(secs, cols, today)
 
+    # 舊檔若已有「檔案地圖」callout 就原樣保留——那是 vault 這邊維護的，
+    # 每次重匯出都重寫一次的話，地圖改版就會被這支蓋掉。
+    keepmap = ""
+    if os.path.exists(OUT):
+        prev = io.open(OUT, encoding="utf-8").read()
+        i = prev.find("> [!map]")
+        if i >= 0:
+            lines = prev[i:].split("\n")
+            block = []
+            for ln in lines:
+                if ln.startswith(">"):
+                    block.append(ln)
+                else:
+                    break
+            keepmap = "\n".join(block) + "\n"
+
     fm = """---
 aliases: [換屋數字快照, 換屋總表快照]
 parent: "[[Joan/生活/財務/換屋數字總表_說明]]"
@@ -338,6 +354,9 @@ description: 換屋數字總表網頁的純文字快照，給 AI 與全文搜尋
 
 # 換屋數字總表（純文字快照）
 
+<!-- 檔案地圖由 vault 那邊維護；重匯出時會從舊檔保留下來，別在這裡寫死 -->
+{keepmap}
+
 > [!warning] 這份是快照，不是正本
 > 正本是可即時重算的網頁 → https://joanzhang45.github.io/fang-calc/
 > 本檔給 AI 讀取與 Obsidian 全文搜尋用。**數字是 {today} 當下的值**，
@@ -345,7 +364,7 @@ description: 換屋數字總表網頁的純文字快照，給 AI 與全文搜尋
 > 重新匯出：在 `fang-calc` 專案跑 `python export_md.py`。
 >
 > 檔案地圖與各數字的正本歸屬 → [[Joan/生活/財務/換屋數字總表_說明|換屋數字總表]]
-""".format(today=today)
+""".format(today=today, keepmap=keepmap)
 
     with io.open(OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write(fm + body + "\n")
