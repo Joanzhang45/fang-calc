@@ -12,7 +12,7 @@ https://joanzhang45.github.io/fang-calc/
 | vault 三重共構宅出售損益試算 | 賣多少保本 | 二、三 |
 | sell-calc 網頁 | 賣屋損益試算 | 二 |
 | 換屋資金計畫（彣錩的 agent） | 買得起嗎 | 四〜七 |
-| 投資計算表.xlsx（Joan 桌面） | 看物件當下評估 | 十 |
+| 投資計算表.xlsx（Joan 桌面） | 看物件當下評估 | 十三 |
 
 ## 對帳修正的三個數字
 
