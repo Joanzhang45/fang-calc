@@ -97,7 +97,7 @@ summary:hover{color:var(--ink)}
 
 
 .chartwrap{overflow-x:auto}
-#chart{width:100%;min-width:640px;height:250px;display:block}
+#chart{width:100%;min-width:660px;height:262px;display:block}
 .chartnote{font-size:13px;color:var(--ink2);margin-top:10px}
 .chartnote b{color:var(--ink)}
 
@@ -292,8 +292,15 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-si
 
 <section id="sc">
  <h2 class="b">七、現金曲線：會不會中途斷炊</h2>
- <div class="card chartwrap"><svg id="chart" viewBox="0 0 960 250" preserveAspectRatio="xMidYMid meet"></svg></div>
+ <div class="card chartwrap"><svg id="chart" viewBox="0 0 960 262" preserveAspectRatio="xMidYMid meet"></svg></div>
  <div class="chartnote" id="chartNote"></div>
+ <h2 class="o" style="margin-top:22px;font-size:15px">裝修款什麼時候付</h2>
+ <div class="card"><table id="renoTbl"></table></div>
+ <div class="note red"><b>進場就要付，不是完工才付</b>
+ 泥作進場時已經付掉 <b class="inl">60%</b>，工程可能才走一半。這是業界常態，
+ 但代表<b class="inl">付款進度永遠走在工程進度前面</b>。<br>
+ 建議每次付款前拍照留存現場，並要求「進場」有明確定義（師傅到場、材料進場），
+ 不要只憑口頭通知。合約第六條：請款後 7 日內付款，遲延年息 5%。</div>
  <details>
   <summary>▸ 改時間安排</summary>
   <div class="card" style="margin-top:8px">
@@ -645,11 +652,13 @@ function simulate(){
   var periods = T.rentStart - T.buyM;
   var renoTotal = W(p.newReno)*(1+p.buffer/100);
   // 裝修付款：簽約10 拆除20 泥作30 油漆30 驗收10
-  var SCHED = [[0,.10],[0.125,.20],[0.375,.30],[0.625,.30],[1.0,.10]];
+  var SCHED = [[0,.10,"簽約"],[0.125,.20,"拆除進場"],[0.375,.30,"泥作進場"],[0.625,.30,"油漆進場"],[1.0,.10,"驗收"]];
   var due = {};
+  var dueLabel = {};
   SCHED.forEach(function(x){
     var mm = T.buyM + Math.round(x[0]*periods);
     due[mm] = (due[mm]||0) + renoTotal*x[1];
+    dueLabel[mm] = (dueLabel[mm] ? dueLabel[mm]+"＋" : "") + x[2];
   });
 
   var cash = W(p.cash) + W(p.cashW), pts = [], m, inc, exp, spend, note;
@@ -678,14 +687,34 @@ function simulate(){
     cash -= spend;
     pts.push({m:m, v:cash, net:inc-exp, note:note});
   }
-  return {pts:pts, T:T};
+  return {pts:pts, T:T, due:due, dueLabel:dueLabel, renoTotal:renoTotal, SCHED:SCHED};
+}
+
+function renderReno(){
+  var el = document.getElementById("renoTbl");
+  if(!el) return;
+  var S = simulate(), T = S.T;
+  var periods = T.rentStart - T.buyM;
+  var html = '<thead><tr><th>什麼時候</th><th>進度</th><th>比例</th><th>要付</th><th>付完手上剩</th></tr></thead><tbody>';
+  var cum = 0;
+  S.SCHED.forEach(function(x){
+    var m = T.buyM + Math.round(x[0]*periods);
+    var amt = S.renoTotal * x[1];
+    cum += amt;
+    var cash = (m<=HORIZON && S.pts[m]) ? S.pts[m].v : 0;
+    html += "<tr><td>第 " + m + " 個月</td><td>" + x[2] + "</td><td>"
+         + Math.round(x[1]*100) + "%</td><td class='neg'>−" + n(amt) + "</td><td class='"
+         + (cash>=0?"pos":"neg") + "'>" + n(cash) + "</td></tr>";
+  });
+  html += "<tr class='tot'><td>合計</td><td></td><td>100%</td><td class='neg'>−" + n(cum) + "</td><td></td></tr></tbody>";
+  el.innerHTML = html;
 }
 
 function drawChart(){
   var svg = document.getElementById("chart");
   if(!svg) return null;
   var S = simulate(), pts = S.pts, T = S.T;
-  var W_=960, H=250, PL=70, PR=16, PT=20, PB=30;
+  var W_=960, H=262, PL=70, PR=16, PT=20, PB=42;
   var vals = pts.map(function(x){return x.v;});
   var hi = Math.max.apply(null, vals.concat([0]));
   var lo = Math.min.apply(null, vals.concat([0]));
@@ -725,6 +754,19 @@ function drawChart(){
      + '<text x="'+(PL-8)+'" y="'+Y(lo+pad*0.6).toFixed(1)+'" text-anchor="end" font-size="10.5" fill="#C4593F">'+wan(lo+pad*0.6)+'</text>'
      + '<path d="'+d+'" fill="none" stroke="#C4593F" stroke-width="2.2" stroke-linejoin="round"/>';
 
+  // 裝修付款點：每一期畫一根柱子＋金額
+  Object.keys(S.due).forEach(function(k){
+    var m = +k;
+    if(m<0 || m>HORIZON) return;
+    var amt = S.due[k];
+    var x = X(m), y = Y(pts[m].v);
+    g += '<line x1="'+x.toFixed(1)+'" y1="'+y.toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+(H-PB).toFixed(1)
+       + '" stroke="#6B7A52" stroke-width="7" opacity=".16"/>'
+       + '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.6" fill="#6B7A52" stroke="#FFFDF8" stroke-width="1.4"/>'
+       + '<text x="'+x.toFixed(1)+'" y="'+(H-PB+12).toFixed(1)+'" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4B5A38">−'
+       + wan(amt) + '</text>';
+  });
+
   g += '<circle cx="'+X(minI).toFixed(1)+'" cy="'+Y(pts[minI].v).toFixed(1)+'" r="5" fill="#C4593F" stroke="#FFFDF8" stroke-width="1.6"/>';
   var ty = Y(pts[minI].v) + (Y(pts[minI].v)>H-PB-30 ? -12 : 18);
   g += '<text x="'+X(minI).toFixed(1)+'" y="'+ty.toFixed(1)+'" text-anchor="middle" font-size="12" font-weight="800" fill="#C4593F">'+n(pts[minI].v)+'</text>';
@@ -734,7 +776,7 @@ function drawChart(){
        + '<text x="'+X(crossI).toFixed(1)+'" y="'+(Y(pts[crossI].v)-11).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#4B5A38">第 '+crossI+' 月轉正</text>';
   }
   for(i=0;i<=HORIZON;i+=6){
-    g += '<text x="'+X(i).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="10.5" fill="#6A625A">'+(i===0?"搬家":i+"月")+'</text>';
+    g += '<text x="'+X(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle" font-size="10.5" fill="#6A625A">'+(i===0?"搬家":i+"月")+'</text>';
   }
   svg.innerHTML = g;
   return {min:pts[minI], minI:minI, crossI:crossI};
@@ -931,6 +973,7 @@ function render(){
   // 七、現金曲線
   (function(){
     var r = drawChart();
+    renderReno();
     var el = document.getElementById("chartNote");
     if(r && el){
       el.innerHTML = r.min.v>=0
